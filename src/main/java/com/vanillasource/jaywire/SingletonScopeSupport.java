@@ -18,10 +18,25 @@
 
 package com.vanillasource.jaywire;
 
+import java.util.function.Supplier;
+
 /**
  * Pull this interface into a Module to define a dependency to a
  * singleton scope.
  */
 public interface SingletonScopeSupport {
+   /**
+    * Returns a scope that will instantiate only once for each given
+    * supplier class.
+    */
    Scope getSingletonScope();
+
+   /**
+    * Convenience method to produce singleton objects easily. Equals
+    * <code>getSingletonScope().get(&lt;supplier&gt;)</code>.
+    */
+   default <T> T singleton(Supplier<T> supplier) {
+      return getSingletonScope().get(supplier);
+   }
 }
+
