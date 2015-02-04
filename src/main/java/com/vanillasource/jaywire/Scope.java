@@ -26,6 +26,19 @@ import java.util.function.Supplier;
  * given factory.
  */
 public interface Scope {
+   /**
+    * Get an instance of the given factory for this scope. This
+    * instance may be a cached instance, or may be created through
+    * the factory depending on the scope semantics.
+    */
    <T> T get(Supplier<T> factory);
+
+   /**
+    * Apply the semantics of this scope to the provided supplier. The returned
+    * supplier behaves as the <code>get()</code> method of this scope.
+    */
+   default <T> Supplier<T> apply(Supplier<T> factory) {
+      return () -> get(factory);
+   }
 }
 
