@@ -30,15 +30,15 @@ import java.util.function.Supplier;
  * single object other may also initialize as singleton scope.
  */
 public class SingletonScope implements Scope {
-   private Map<Supplier<?>, Object> instances = new HashMap<>();
+   private Map<Class<?>, Object> instances = new HashMap<>();
 
    @Override
    @SuppressWarnings("unchecked")
    public synchronized <T> T get(Supplier<T> supplier) {
-      T instance = (T) instances.get(supplier);
+      T instance = (T) instances.get(supplier.getClass());
       if (instance == null) {
          instance = supplier.get();
-         instances.put(supplier, instance);
+         instances.put(supplier.getClass(), instance);
       }
       return instance;
    }
