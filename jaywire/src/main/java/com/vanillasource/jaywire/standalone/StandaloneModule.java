@@ -18,19 +18,12 @@
 
 package com.vanillasource.jaywire.standalone;
 
-import com.vanillasource.jaywire.Scope;
-import com.vanillasource.jaywire.SingletonScopeSupport;
-import com.vanillasource.jaywire.ThreadLocalScopeSupport;
-
 /**
- * Module implementation that provides a thread local scope with
- * the help of singleton scope.
+ * A module that combines all available functionality from
+ * the standalone modules. Extend this class on the top of your
+ * module hierarchy to pull all standalone scope implementations.
  */
-public interface ThreadLocalScopeModule extends SingletonScopeSupport, ThreadLocalScopeSupport {
-   @Override
-   default Scope getThreadLocalScope() {
-      return singleton(() -> new ThreadLocalScope());
-   }
+public abstract class StandaloneModule 
+   extends SingletonScopeModule implements ThreadLocalScopeModule {
 }
-
 

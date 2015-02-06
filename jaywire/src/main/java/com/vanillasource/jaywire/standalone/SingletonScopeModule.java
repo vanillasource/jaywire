@@ -21,6 +21,11 @@ package com.vanillasource.jaywire.standalone;
 import com.vanillasource.jaywire.SingletonScopeSupport;
 import com.vanillasource.jaywire.Scope;
 
+/**
+ * A module implementation that provides a singleton scope which is
+ * bound to the module instance. This means all singletons are actually
+ * only singletons inside a module instance.
+ */
 public abstract class SingletonScopeModule implements SingletonScopeSupport {
    private SingletonScope singletonScope = new SingletonScope();
 
