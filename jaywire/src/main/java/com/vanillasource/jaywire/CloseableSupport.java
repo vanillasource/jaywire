@@ -16,15 +16,17 @@
   * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
   */
 
-package com.vanillasource.jaywire.standalone;
+package com.vanillasource.jaywire;
 
 /**
- * A module that combines all available functionality from
- * the standalone modules. Extend this class on the top of your
- * module hierarchy to pull all standalone scope implementations.
+ * Add support for closing auto-closeable objects when the
+ * module is closed.
  */
-public abstract class StandaloneModule 
-   extends SingletonScopeModule 
-   implements ThreadLocalScopeModule, CloseableModule {
+public interface CloseableSupport {
+   /**
+    * Applied directly to closeable objects will register
+    * the object to be closed together with the module.
+    */
+   void closeWithModule(AutoCloseable closeable);
 }
 
