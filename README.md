@@ -151,7 +151,7 @@ Scopes are components themselves available in the Module.
 
 ### Singleton
 
-The singleton scope instantiates each Supplier object exactly once per Module. The
+The singleton scope instantiates each Supplier object at most once per Module. The
 singleton scope is available through the method `getSingletonScope()`, and there
 is a convenience method called `singleton()`.
 
@@ -166,7 +166,7 @@ The request scope implementation supplied in the `StandaloneModule` needs to be
 explicitly controlled. Each time when a new "request" is created the `open()` method
 needs to be called, and when the request is finished, the `close()` method.
 
-Between these two calls, all components are instantiated exactly once.
+Between these two calls, all components are instantiated at most once.
 
 ### Session
 
@@ -182,6 +182,10 @@ components.
 All components are weakly linked to the provided session (key), so if the session
 object itself gets garbage collected (expires), all the related objects also
 get garbage collected.
+
+Note: don't use Strings or Integers as keys, because those may not be garbage 
+collected at all. Use the full session object that will only be referenced as
+long as the session is active.
 
 ### Writing your own Scope
 
@@ -212,6 +216,64 @@ public interface MySpecialScopeSupport {
 ```
 
 ## Dynamic Components
+
+Sometimes a dependency for an object might not be static.
+A component may want to create new instances of another component, for
+example a JobRunner may want to create new configured Job objects each time.
+Or a dependency crosses scope boundaries, for example a singleton service may
+want to access a session scoped user object.
+
+For these cases initializing the component with its dependency in the constructor
+would mean that it always uses the same object. This is where a usually a
+*Factory* is used, where the component is created with the *Factory* which
+can produce a correct instance of its dependency each time. A Factory however
+implies that a new object is created each time, which not be accurate so Java 8
+uses the term `Supplier`.
+
+A dynamic dependency is therefore defined this way:
+
+```java
+import java.util.function.Supplier;
+
+public class PayrollService {
+   private Supplier<User> currentUserSupplier;
+
+   public PayrollService(Support<User> currentUserSupplier) {
+      this.currentUserSupplier = currentUserSupplier;
+   }
+
+   ...
+   public BigDecimal getMonthlySalary() {
+      User currentUser = currentUserSupplier.get();
+      ...
+   }
+   ...
+}
+```
+
+Each time the payroll service `get()`s a User from the *currentUserSupplier* it
+receives the current user of this request / session in a thread-safe manner.
+
+This is how this service can be wired together:
+
+```java
+public class AppModule extends SparkModule {
+   public Supplier<User> getCurrentUserSupplier() {
+      return getSessionScope().apply(() -> new User());
+   }
+
+   public PayrollService getPayrollService() {
+      return singleton(() -> new PayrollService(getCurrentUserSupplier()));
+   }
+}
+```
+
+Easy and explicit. With this configuration there will be exaclty always one
+*User* object in each session, and the *PayrollService* will always access
+the current one, even if multiple threads use the same *PayrollService* instance.
+
+Note also that the definition of the service itself does not require JayWire, it
+is plain Java.
 
 ## Modularisation
 
