@@ -24,19 +24,9 @@ import static org.testng.Assert.*;
 import java.util.function.Supplier;
 
 @Test
-public class ThreadLocalScopeTests {
-   public void testProducesOneObjectPerThread() throws InterruptedException {
-      ThreadLocalScope scope = new ThreadLocalScope();
-      Supplier<Object> objectSupplier = () -> new Object();
-
-      Object result1 = threadExecute(scope, objectSupplier);
-      Object result2 = threadExecute(scope, objectSupplier);
-
-      assertNotSame(result1, result2);
-   }
-
-   public void testReturnsSameObjectInSameThread() {
-      ThreadLocalScope scope = new ThreadLocalScope();
+public class DelimitedRequestScopeTests {
+   public void testProducesOneObjectPerRequest() {
+      DelimitedRequestScope scope = new DelimitedRequestScope(new SingletonScope());
       Supplier<Object> objectSupplier = () -> new Object();
 
       Object result1 = scope.get(objectSupplier);
@@ -45,26 +35,26 @@ public class ThreadLocalScopeTests {
       assertSame(result1, result2);
    }
 
-   private Object threadExecute(ThreadLocalScope scope, Supplier<Object> supplier) throws InterruptedException {
-      ObjectProducer producer = new ObjectProducer(scope.apply(supplier));
-      Thread thread = new Thread(producer);
-      thread.start();
-      thread.join();
-      return producer.result;
+   public void testProcudesAnotherObjectAfterOpen() {
+      DelimitedRequestScope scope = new DelimitedRequestScope(new SingletonScope());
+      Supplier<Object> objectSupplier = () -> new Object();
+
+      Object result1 = scope.get(objectSupplier);
+      scope.open();
+      Object result2 = scope.get(objectSupplier);
+
+      assertNotSame(result1, result2);
    }
 
+   public void testProcudesAnotherObjectAfterClose() {
+      DelimitedRequestScope scope = new DelimitedRequestScope(new SingletonScope());
+      Supplier<Object> objectSupplier = () -> new Object();
 
-   private static class ObjectProducer implements Runnable {
-      private Object result;
-      private Supplier<Object> supplier;
+      Object result1 = scope.get(objectSupplier);
+      scope.open();
+      Object result2 = scope.get(objectSupplier);
 
-      private ObjectProducer(Supplier<Object> supplier) {
-         this.supplier = supplier;
-      }
-
-      public void run() {
-         result = supplier.get();
-      }
+      assertNotSame(result1, result2);
    }
 }
 

@@ -20,15 +20,21 @@ package com.vanillasource.jaywire.standalone;
 
 import com.vanillasource.jaywire.RequestScopeSupport;
 import com.vanillasource.jaywire.SingletonScopeSupport;
+import com.vanillasource.jaywire.ThreadLocalScopeSupport;
 import com.vanillasource.jaywire.Scope;
 
 /**
- * A module implementation that provides a request scope.
+ * A module implementation that provides a request scope based on
+ * the thread local scope. It assumes that each request will be handled
+ * inside a single thread, and a single thread can not have two
+ * requests at the same time.
  */
-public interface DelimitedRequestScopeModule extends SingletonScopeSupport, RequestScopeSupport {
+public interface DelimitedRequestScopeModule 
+   extends SingletonScopeSupport, RequestScopeSupport, ThreadLocalScopeSupport {
+
    @Override
    default DelimitedRequestScope getRequestScope() {
-      return singleton(() -> new DelimitedRequestScope());
+      return singleton(() -> new DelimitedRequestScope(getThreadLocalScope()));
    }
 }
 

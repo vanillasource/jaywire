@@ -23,24 +23,54 @@ import java.util.function.Supplier;
 
 /**
  * A request scope which has to be explicitly delimited.
- * This scope uses the thread local scope to store objects,
- * so it assumes that a single request will be handled in a
- * single thread.
+ * It is based on a containing scope (usually thread local)
+ * that can guarantee that only one request is open
+ * at any time.
  */
-public class DelimitedRequestScope extends ThreadLocalScope implements Scope {
+public class DelimitedRequestScope implements Scope {
+   private Scope containerScope;
+
+   public DelimitedRequestScope(Scope containerScope) {
+      this.containerScope = containerScope;
+   }
+
    /**
     * Open a new request, forget all previous objects if there were any.
     * There is only one open request per thread at any given time.
     */
    public void open() {
-      reset();
+      getContainer().reset();
    }
 
    /**
     * Close a request, forget all previous objects.
     */
    public void close() {
-      reset();
+      getContainer().reset();
+   }
+
+   private Container getContainer() {
+      return containerScope.get(() -> new Container());
+   }
+
+   @Override
+   public <T> T get(Supplier<T> factory) {
+      return getContainer().get().get(factory);
+   }
+
+   /**
+    * Holds a single resettable singleton scope.
+    */
+   private class Container {
+      private Scope scope = new SingletonScope();
+
+      private Scope get() {
+         return scope;
+      }
+
+      private void reset() {
+         scope = new SingletonScope();
+      }
    }
 }
 

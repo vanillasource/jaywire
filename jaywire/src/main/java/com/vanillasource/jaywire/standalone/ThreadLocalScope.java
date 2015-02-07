@@ -29,10 +29,6 @@ public class ThreadLocalScope implements Scope {
    private ThreadLocal<SingletonScope> threadLocalSingletons = 
       ThreadLocal.withInitial(() -> new SingletonScope());
 
-   protected void reset() {
-      threadLocalSingletons.remove();
-   }
-
    @Override
    public <T> T get(Supplier<T> supplier) {
       return threadLocalSingletons.get().get(supplier);
