@@ -332,10 +332,52 @@ from the fragments, and the scope implementations are provided by the `Standalon
 class. The same fragments can therefore be used the same way with other scope
 implementations or in other combinations.
 
-## Closeing the Module
+## Closing Components
+
+There is no need to explicitly close the `StandaloneModule` as there are no
+additional resources that need to be let go. However some services,
+such as database connections may need to be closed when the module is no longer
+used.
+
+You can use the standard `AutoCloseable` interface to mark your Component or Service
+as closeable. The `StandaloneModule` also implements the `AutoCloseable` interface,
+and can be closed or used in a try-with-resources construct. You may
+register your Components to be closed together with the Module the following way:
+
+```java
+public class AppModule extends StandaloneModule {
+   public Database getDatabase() {
+      singleton(() -> closeWithModule(new ...));
+   }
+}
+```
+
+The `closeWithModule()` method registers the *Database* to be closed together with
+the Module. Note: register each object only once!
 
 ## Integration
 
+JayWire provides the `StandaloneModule` by default which can be used to wire
+components together for a standalone program, providing no integration with its
+environment. However, because all scopes are just normal objects these scopes
+can be replaced/adapted to integrate with the environment they are in.
+
 ### Spark Framework
 
+Spark (http://sparkjava.com/) is a small framework to implement Web Applications.
+JayWire's `jaywire-spark` artifact provides integration with this framework by
+only needing to use the `SparkModule` class instead of `StandaloneModule`.
+
+By using `SparkModule` the request and session scopes will automatically work. The
+module registers the necessary filters on construction.
+
+It is available under following coordinates:
+
+```xml
+<dependency>
+   <groupId>com.vanillasource.jaywire</groupId>
+   <artifactId>jaywire-spark</artifactId>
+   <version>1.0.0</version>
+</dependency>
+```
 
