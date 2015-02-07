@@ -16,16 +16,28 @@
   * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
   */
 
-package com.vanillasource.jaywire.standalone;
+package com.vanillasource.jaywire;
+
+import java.util.function.Supplier;
 
 /**
- * A module that combines all available functionality from
- * the standalone modules. Extend this class on the top of your
- * module hierarchy to pull all standalone scope implementations.
+ * Pull this interface into a Module to define a dependency to a
+ * session scope.
  */
-public abstract class StandaloneModule 
-   extends SingletonScopeModule 
-   implements ThreadLocalScopeModule, CloseableModule, 
-              DelimitedRequestScopeModule, WeakSessionScopeModule {
+public interface SessionScopeSupport {
+   /**
+    * Returns a scope that will instantiate objects only once
+    * for one session. Semantics are defined in detail by
+    * implementation, mostly used in web context.
+    */
+   Scope getSessionScope();
+
+   /**
+    * Convenience method to produce session scope objects easily. Equals
+    * <code>getSessionScope().get(&lt;supplier&gt;)</code>.
+    */
+   default <T> T sessionScope(Supplier<T> supplier) {
+      return getSessionScope().get(supplier);
+   }
 }
 

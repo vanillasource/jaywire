@@ -18,14 +18,23 @@
 
 package com.vanillasource.jaywire.standalone;
 
+import com.vanillasource.jaywire.RequestScopeSupport;
+import com.vanillasource.jaywire.SingletonScopeSupport;
+import com.vanillasource.jaywire.SessionScopeSupport;
+import com.vanillasource.jaywire.Scope;
+
 /**
- * A module that combines all available functionality from
- * the standalone modules. Extend this class on the top of your
- * module hierarchy to pull all standalone scope implementations.
+ * A module implementation that provides a session scope based on
+ * the request scope. The request scope has to be opened before
+ * the session is opened.
  */
-public abstract class StandaloneModule 
-   extends SingletonScopeModule 
-   implements ThreadLocalScopeModule, CloseableModule, 
-              DelimitedRequestScopeModule, WeakSessionScopeModule {
+public interface WeakSessionScopeModule
+   extends SingletonScopeSupport, RequestScopeSupport, SessionScopeSupport {
+
+   @Override
+   default WeakSessionScope getSessionScope() {
+      return singleton(() -> new WeakSessionScope(getRequestScope()));
+   }
 }
+
 
