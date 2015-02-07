@@ -298,17 +298,17 @@ import com.vanillasource.jaywire.StandardScopesSupport;
 
 public interface PrintingModule extends StandardScopesSupport {
    default PrintingService getPrintingService() {
-      singleton(...);
+      return singleton(...);
    }
 
    default PrinterRegistry getPrinterRegistry() {
-      singleton(...);
+      return singleton(...);
    }
 }
 
 public interface CommunicationModule extends StandardScopesSupport {
    default EmailService getEmailService() {
-      singleton(...);
+      return singleton(...);
    }
 }
 
@@ -316,8 +316,8 @@ public interface CommunicationModule extends StandardScopesSupport {
 ```
 
 These fragments are all interfaces, and the `StandardScopesSupport` just defines
-the standard scope methods to be implemented later. This also means that
-a concrete Module class can pull as many fragments as necessary without problems.
+the standard scope methods to be implemented later. This enables 
+a concrete Module class to pull as many fragments as necessary without problems.
 
 A top level Module class for a standalone program would look like the following:
 ```java
