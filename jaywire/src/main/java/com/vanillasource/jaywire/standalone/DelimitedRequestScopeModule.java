@@ -18,24 +18,18 @@
 
 package com.vanillasource.jaywire.standalone;
 
+import com.vanillasource.jaywire.RequestScopeSupport;
+import com.vanillasource.jaywire.SingletonScopeSupport;
 import com.vanillasource.jaywire.Scope;
-import java.util.function.Supplier;
 
 /**
- * An implementation of a thread local scope that is basically
- * a singleton scope in a thread local variable. Scope is thread-safe.
+ * A module implementation that provides a request scope.
  */
-public class ThreadLocalScope implements Scope {
-   private ThreadLocal<SingletonScope> threadLocalSingletons = 
-      ThreadLocal.withInitial(() -> new SingletonScope());
-
-   protected void reset() {
-      threadLocalSingletons.remove();
-   }
-
+public interface DelimitedRequestScopeModule extends SingletonScopeSupport, RequestScopeSupport {
    @Override
-   public <T> T get(Supplier<T> supplier) {
-      return threadLocalSingletons.get().get(supplier);
+   default DelimitedRequestScope getRequestScope() {
+      return singleton(() -> new DelimitedRequestScope());
    }
 }
+
 

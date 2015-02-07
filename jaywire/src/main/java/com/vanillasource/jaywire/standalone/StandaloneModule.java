@@ -25,6 +25,7 @@ package com.vanillasource.jaywire.standalone;
  */
 public abstract class StandaloneModule 
    extends SingletonScopeModule 
-   implements ThreadLocalScopeModule, CloseableModule {
+   implements ThreadLocalScopeModule, CloseableModule, 
+              DelimitedRequestScopeModule {
 }
 

@@ -22,20 +22,26 @@ import com.vanillasource.jaywire.Scope;
 import java.util.function.Supplier;
 
 /**
- * An implementation of a thread local scope that is basically
- * a singleton scope in a thread local variable. Scope is thread-safe.
+ * A request scope which has to be explicitly delimited.
+ * This scope uses the thread local scope to store objects,
+ * so it assumes that a single request will be handled in a
+ * single thread.
  */
-public class ThreadLocalScope implements Scope {
-   private ThreadLocal<SingletonScope> threadLocalSingletons = 
-      ThreadLocal.withInitial(() -> new SingletonScope());
-
-   protected void reset() {
-      threadLocalSingletons.remove();
+public class DelimitedRequestScope extends ThreadLocalScope implements Scope {
+   /**
+    * Open a new request, forget all previous objects if there were any.
+    * There is only one open request per thread at any given time.
+    */
+   public void open() {
+      reset();
    }
 
-   @Override
-   public <T> T get(Supplier<T> supplier) {
-      return threadLocalSingletons.get().get(supplier);
+   /**
+    * Close a request, forget all previous objects.
+    */
+   public void close() {
+      reset();
    }
 }
+
 

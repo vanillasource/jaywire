@@ -25,7 +25,7 @@ import java.util.function.Supplier;
 
 @Test
 public class ThreadLocalScopeTests {
-   public void testSupplierProducesOneObjectPerThread() throws InterruptedException {
+   public void testProducesOneObjectPerThread() throws InterruptedException {
       ThreadLocalScope scope = new ThreadLocalScope();
       Supplier<Object> objectSupplier = () -> new Object();
 
@@ -35,7 +35,7 @@ public class ThreadLocalScopeTests {
       assertNotSame(result1, result2);
    }
 
-   public void testSupplierReturnsSameObjectInSameThread() {
+   public void testReturnsSameObjectInSameThread() {
       ThreadLocalScope scope = new ThreadLocalScope();
       Supplier<Object> objectSupplier = () -> new Object();
 
@@ -43,6 +43,17 @@ public class ThreadLocalScopeTests {
       Object result2 = scope.get(objectSupplier);
 
       assertSame(result1, result2);
+   }
+
+   public void testProducesAnotherObjectAfterReset() {
+      ThreadLocalScope scope = new ThreadLocalScope();
+      Supplier<Object> objectSupplier = () -> new Object();
+
+      Object result1 = scope.get(objectSupplier);
+      scope.reset();
+      Object result2 = scope.get(objectSupplier);
+
+      assertNotSame(result1, result2);
    }
 
    private Object threadExecute(ThreadLocalScope scope, Supplier<Object> supplier) throws InterruptedException {
