@@ -277,6 +277,61 @@ is plain Java.
 
 ## Modularisation
 
+Having one Module object defined at the top of an application might be
+sufficient for some projects, however if there are multiple loosely coupled subsystems,
+or subsystems that are used by multiple parties, it may be useful to provide
+a wireing module *fragment* only for the components in the given subsystems to
+contain a default wireing.
+
+Consider for example a system with these independent subsystems (packages): Printing,
+Communication, Storage. Suppose each wants to provide a default wireing for
+its services. Defining a Module class for each would not be appropriate because 
+that would require multiple inheritance somewhere at the top. Also, defining a Module
+would define the scope implementations, and this would not allow to use the Module
+both in a standalone and a web context for example.
+
+So this module *fragment* must be an interface, in which case it can be
+defined this way:
+
+```java
+import com.vanillasource.jaywire.StandardScopesSupport;
+
+public interface PrintingModule extends StandardScopesSupport {
+   default PrintingService getPrintingService() {
+      singleton(...);
+   }
+
+   default PrinterRegistry getPrinterRegistry() {
+      singleton(...);
+   }
+}
+
+public interface CommunicationModule extends StandardScopesSupport {
+   default EmailService getEmailService() {
+      singleton(...);
+   }
+}
+
+...
+```
+
+These fragments are all interfaces, and the `StandardScopesSupport` just defines
+the standard scope methods to be implemented later. This also means that
+a concrete Module class can pull as many fragments as necessary without problems.
+
+A top level Module class for a standalone program would look like the following:
+```java
+public class AppModule
+   extends StandaloneModule
+   implements PrintingModule, CommunicationModule, StorageModule {
+}
+```
+
+No need to implement anything, since everything is provided in the default methods
+from the fragments, and the scope implementations are provided by the `StandaloneModule`
+class. The same fragments can therefore be used the same way with other scope
+implementations or in other combinations.
+
 ## Closeing the Module
 
 ## Integration
