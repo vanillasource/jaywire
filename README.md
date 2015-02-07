@@ -224,7 +224,7 @@ Or a dependency crosses scope boundaries, for example a singleton service may
 want to access a session scoped user object.
 
 For these cases initializing the component with its dependency in the constructor
-would mean that it always uses the same object. This is where a usually a
+would mean that it always uses the same object. This is usually where a
 *Factory* is used, where the component is created with the *Factory* which
 can produce a correct instance of its dependency each time. A Factory however
 implies that a new object is created each time, which not be accurate so Java 8
@@ -238,7 +238,7 @@ import java.util.function.Supplier;
 public class PayrollService {
    private Supplier<User> currentUserSupplier;
 
-   public PayrollService(Support<User> currentUserSupplier) {
+   public PayrollService(Supplier<User> currentUserSupplier) {
       this.currentUserSupplier = currentUserSupplier;
    }
 
