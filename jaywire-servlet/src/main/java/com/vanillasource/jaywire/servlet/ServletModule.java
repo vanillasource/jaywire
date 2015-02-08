@@ -85,7 +85,8 @@ public abstract class ServletModule extends StandaloneModule implements ServletC
             chain.doFilter(request, response);
             getRequestScope().close();
          }
-      });
+      }).addMappingForUrlPatterns(null, false, "/*");
+      context.log("JayWire servlet module "+getClass().getName()+" activated");
    }
 
    /**
