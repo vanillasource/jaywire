@@ -13,6 +13,7 @@
       <module>jaywire</module>
       <module>jaywire-spark</module>
       <module>jaywire-servlet</module>
+      <module>jaywire-wicket</module>
    </modules>
 
    <properties>
