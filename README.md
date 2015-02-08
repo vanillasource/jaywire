@@ -405,4 +405,47 @@ public static final void main(String[] args) {
 }
 ```
 
+### Java Servlets
+
+JayWire integrates well with the low-evel Java Servlet framework. Extend
+the `ServletModule` from the following dependency:
+
+```xml
+<dependency>
+   <groupId>com.vanillasource.jaywire</groupId>
+   <artifactId>jaywire-servlet</artifactId>
+   <version>1.0.0</version>
+</dependency>
+```
+
+The derived module class should be marked with the annotation 
+`javax.servlet.annotation.WebListener` to be wired into the Servlet
+container lifecycle phases. This enables the module to automatically
+support request and session scopes. In addition the module will be
+automatically *closed* when the web container shuts down, so any
+components registered with `closeWithModule()` will also be closed.
+
+Servlets are normally instantiated by the container on-demand in which case
+explicit injection would obviously not work. Instead, the `ServletModule`
+offers the method `registerComponents()` to override and register fully
+constructed Servlet objects.
+
+```java
+import com.vanillasource.jaywire.servlet.ServletModule;
+import javax.servlet.annotation.WebListener;
+
+@WebListener
+public class WebModule extends ServletModule {
+   public Database getDatabase() {
+      return singleton(...);
+   }
+
+   @Override
+   public void registerComponents(ServletContext context) {
+      context.addServlet("UserServlet", new UserServlet(getDatabase()));
+      ...
+   }
+}
+```
+
 
