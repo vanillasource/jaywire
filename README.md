@@ -26,6 +26,8 @@ approximate order):
  * Small.
  * Easy to use.
 
+JayWire is <20Kb, and integrates out-of-the-box with: Spark, Servlets, Wicket. (See below)
+
 Note, that JayWire requires Java 8 or higher. This is necessary for usability reasons.
 
 ## Quickstart
@@ -447,5 +449,130 @@ public class WebModule extends ServletModule {
    }
 }
 ```
+
+### Apache Wicket
+
+The Wicket integration enables the request and session scopes to be used
+with Wicket. In addition the Module automatically closes when the Wicket
+*Application* is destroyed.
+
+It is available under the following Maven coordinates:
+
+```xml
+<dependency>
+   <groupId>com.vanillasource.jaywire</groupId>
+   <artifactId>jaywire-wicket</artifactId>
+   <version>1.0.2</version>
+</dependency>
+```
+
+This library contains the Module implementation `WicketModule`. To use a
+`WicketModule`, the Wicket Application needs to call the `init()` method
+of the Module, and needs to replace the default *PageFactory* with the
+one provided by the Module:
+
+```java
+public class Application extends WebApplication {
+   private AppModule module = new AppModule(); // This is your Module
+
+   ...
+
+   @Override
+   public void init() {
+      ...
+      module.init(this);
+   }   
+
+   @Override
+   public IPageFactory newPageFactory() {
+      return module.getPageFactory();
+   }   
+
+   ...
+}
+```
+
+#### Injecting non-bookmarkable Pages
+
+In Wicket there are two types of Pages. Non-bookmarkable pages are the
+ones where the control is forwarded to an explicitly constructed page:
+
+```java
+public class CustomComponent extends Component {
+   ...
+ 
+      setResponsePage(new SomePage(a));
+   ...
+}
+```
+
+Here *SomePage* is not bookmarkable, since it is taking a parameter explicitly from
+the processing of the current page, so it has some non-reproducable state. Let's 
+assume that SomePage also needs some services that need to be injected. In this
+case, you can define the following method in your Module:
+
+```java
+   ...
+   public Database getDatabase() {
+      return singleton(...);
+   }
+
+   public Function<A, SomePage> getSomePageFactory() {
+      return a -> new SomePage(getDatabase(), getUserService(), a);
+   }
+
+   public CustomComponent getCustomComponent() {
+      return new CustomComponent(getSomePageFactory());
+   }
+   ...
+```
+
+The custom component would then look like this:
+
+```java
+public class CustomComponent extends Component {
+   private Function<A, SomePage> somePageFactory;
+
+   public CustomComponent(Function<A, SomePage> somePageFactory) {
+      this.somePageFactory = somePageFactory;
+   }
+   ...
+ 
+      setResponsePage(somePageFactory.apply(a));
+   ...
+```
+
+In short, the injected services become invisible to the *CustomComponent*, it only
+knows to forward the parameters that it needs to know about.
+
+#### Bookmarkable Pages
+
+Bookmarkable pages are the ones Wicket can instantiate itself. These take either no
+parameters on the constructor, or only a single *PageParameters* parameter. These
+are referred to this way:
+
+```java
+   ...
+   setResponsePage(SomePage.class);
+   ...
+```
+
+They inherit no state from the forwarding component, but they might have dependencies
+that need to be injected. These pages need to be explicitly registered with JayWire
+the following way:
+
+```java
+public class AppModule extends WicketModule {
+   ...
+   @Override
+   protected void registerPages() {
+      addPage(SomePage.class, pageParameters -> new SomePage(getDatabase()));
+   }
+}
+```
+
+This way Wicket can instantiate the page on demand with all the dependencies given
+as specified explicitly. The construction of the page can ignore the page parameters
+if it chooses to.
 
 
