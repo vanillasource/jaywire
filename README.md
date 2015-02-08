@@ -8,9 +8,9 @@ like CDI (Weld) and want to preserve all the flexibility of pure
 Java Code.
 
 Specifically, the design goals are the following (with priorities in 
-appoximate order):
+approximate order):
 
- * Java Code only.
+ * Pure Java Code.
  * Compile-time wireing.
  * Typesafe.
  * Support pure POJO components.
@@ -227,7 +227,7 @@ For these cases initializing the component with its dependency in the constructo
 would mean that it always uses the same object. This is usually where a
 *Factory* is used, where the component is created with the *Factory* which
 can produce a correct instance of its dependency each time. A Factory however
-implies that a new object is created each time, which not be accurate so Java 8
+implies that a new object is created each time, which might not be accurate so Java 8
 uses the term `Supplier`.
 
 A dynamic dependency is therefore defined this way:
@@ -380,4 +380,29 @@ It is available under following coordinates:
    <version>1.0.0</version>
 </dependency>
 ```
+
+A possible definition of the Module would look like this:
+
+```java
+import static spark.Spark.*;
+
+public class WebModule extends SparkModule {
+   ...
+   public void addRoutes() {
+      get("/", new HomePage(getUserService()));
+      get("/order", new OrderPage(getUserService(), getOrderService()));
+      ...
+   }
+}
+```
+
+The main method is then:
+
+```java
+public static final void main(String[] args) {
+   WebModule module = new WebModule();
+   module.addRoutes();
+}
+```
+
 
