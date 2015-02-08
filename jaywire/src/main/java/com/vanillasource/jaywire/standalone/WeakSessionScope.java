@@ -50,13 +50,23 @@ public class WeakSessionScope implements Scope {
     * @param session The session object that can be used as a weak key.
     * If this object is garbage collected, every allocated objects will be too.
     */
-   public void open(Object session) {
+   public synchronized void open(Object session) {
       Scope currentScope = singletonScopes.get(session);
       if (currentScope == null) {
          currentScope = new SingletonScope();
          singletonScopes.put(session, currentScope);
       }
       getContainer().set(currentScope);
+   }
+
+   /**
+    * Forcefully close a given session. Closing a session might not
+    * be necessary if it will be garbage collected, but if not, this
+    * method can be used to drop all resources associated with the
+    * given session object.
+    */
+   public synchronized void close(Object session) {
+      singletonScopes.remove(session);
    }
 
    private Container getContainer() {
