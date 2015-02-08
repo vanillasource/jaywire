@@ -1,11 +1,10 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
    <modelVersion>4.0.0</modelVersion>
    <groupId>com.vanillasource.jaywire</groupId>
    <artifactId>jaywire-parent</artifactId>
    <packaging>pom</packaging>
-   <version>1.0.0-SNAPSHOT</version>
+   <version>1.0.0</version>
    <name>JayWire Parent</name>
    <description>JayWire Projects</description>
 
@@ -37,7 +36,7 @@
       <connection>scm:git:git@github.com:vanillasource/jaywire.git</connection>
       <developerConnection>scm:git:git@github.com:vanillasource/jaywire.git</developerConnection>
       <url>git@github.com:vanillasource/jaywire.git</url>
-     <tag>HEAD</tag>
+     <tag>jaywire-parent-1.0.0</tag>
    </scm>
 
    <distributionManagement>
