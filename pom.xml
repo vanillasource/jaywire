@@ -11,6 +11,8 @@
 
   <modules>
      <module>jaywire</module>
+     <module>jaywire-spark</module>
+     <module>jaywire-servlet</module>
   </modules>
 
   <build>
