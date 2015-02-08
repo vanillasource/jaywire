@@ -7,6 +7,7 @@
    <version>1.0.1-SNAPSHOT</version>
    <name>JayWire Parent</name>
    <description>JayWire Projects</description>
+   <url>https://github.com/vanillasource/jaywire</url>
 
    <modules>
       <module>jaywire</module>

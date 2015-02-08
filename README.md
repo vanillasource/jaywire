@@ -38,7 +38,7 @@ For use in standalone context, add this to your Maven build:
 <dependency>
    <groupId>com.vanillasource.jaywire</groupId>
    <artifactId>jaywire</artifactId>
-   <version>1.0.0</version>
+   <version>1.0.1</version>
 </dependency>
 ```
 
@@ -377,7 +377,7 @@ It is available under following coordinates:
 <dependency>
    <groupId>com.vanillasource.jaywire</groupId>
    <artifactId>jaywire-spark</artifactId>
-   <version>1.0.0</version>
+   <version>1.0.1</version>
 </dependency>
 ```
 
@@ -414,7 +414,7 @@ the `ServletModule` from the following dependency:
 <dependency>
    <groupId>com.vanillasource.jaywire</groupId>
    <artifactId>jaywire-servlet</artifactId>
-   <version>1.0.0</version>
+   <version>1.0.1</version>
 </dependency>
 ```
 
