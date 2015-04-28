@@ -56,9 +56,11 @@ public class MyAppModule extends StandaloneModule {
 }
 ```
 
-In this example there is a Database, ServiceA and ServiceB, all of them singletons. 
-Singleton here means, that they will only be instantiated once for an MyAppModule instance.
-Dependencies are "injected" by simply calling the appropriate method and supplying them as parameters to objects.
+In this example there is a Database, ServiceA and ServiceB, all of them singletons. It is assumed
+that these services / classes are written in the usual Object-Oriented approach by taking all required
+dependencies as constructor parameters.
+These dependencies are then "injected" by simply calling the appropriate methods to get fully constructed
+dependencies and supplying them as parameters to objects.
 
 You can use the _MyAppModule_ then at the "top" of your application to start processing:
 
@@ -70,4 +72,8 @@ public class MyApp {
    }
 }
 ```
+
+### Documentation
+
+Please visit the [JayWire Wiki](https://github.com/vanillasource/jaywire/wiki) for more information.
 
