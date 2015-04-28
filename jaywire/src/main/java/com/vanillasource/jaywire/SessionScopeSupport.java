@@ -33,11 +33,11 @@ public interface SessionScopeSupport {
    Scope getSessionScope();
 
    /**
-    * Convenience method to produce session scope objects easily. Equals
-    * <code>getSessionScope().get(&lt;supplier&gt;)</code>.
+    * Convenience method to produce session scope suppliers easily. Equals
+    * <code>getSessionScope().apply(&lt;supplier&gt;)</code>.
     */
-   default <T> T sessionScope(Supplier<T> supplier) {
-      return getSessionScope().get(supplier);
+   default <T> Supplier<T> sessionScope(Supplier<T> supplier) {
+      return getSessionScope().apply(supplier);
    }
 }
 

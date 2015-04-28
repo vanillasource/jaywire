@@ -33,11 +33,11 @@ public interface RequestScopeSupport {
    Scope getRequestScope();
 
    /**
-    * Convenience method to produce request scope objects easily. Equals
-    * <code>getRequestScope().get(&lt;supplier&gt;)</code>.
+    * Convenience method to produce request scope suppliers easily. Equals
+    * <code>getRequestScope().apply(&lt;supplier&gt;)</code>.
     */
-   default <T> T requestScope(Supplier<T> supplier) {
-      return getRequestScope().get(supplier);
+   default <T> Supplier<T> requestScope(Supplier<T> supplier) {
+      return getRequestScope().apply(supplier);
    }
 }
 
