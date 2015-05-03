@@ -16,25 +16,26 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package com.vanillasource.jaywire;
+package com.vanillasource.jaywire.standalone;
 
+import com.vanillasource.jaywire.Scope;
+import com.vanillasource.jaywire.Factory;
 import java.util.function.Supplier;
-import java.io.Serializable;
 
 /**
- * Responsible for creating an object instance of a certain
- * <i>kind</i>. By default this <i>kind</i> is the classname of
- * this factory.
+ * A scope implementation that returns serializable
+ * suppliers. 
  */
-@FunctionalInterface
-public interface Factory<T> extends Supplier<T> {
+public interface SeparatingScope extends Scope {
    /**
-    * Returns an object representing the <i>kind</i>
-    * of object. This returned object should have its
-    * identity methods implemented.
+    * Return a supplier that can be serialized but does
+    * not pull the factory or any of the environment with it.
+    * This supplier will only be valid if deserialized to the
+    * same JVM, throws exception otherwise.
     */
-   default Serializable getKind() {
-      return getClass().getName();
+   default <T> Supplier<T> apply(Factory<T> factory) {
+      return new SeparatingSupplier<T>(this, factory);
    }
 }
+
 
