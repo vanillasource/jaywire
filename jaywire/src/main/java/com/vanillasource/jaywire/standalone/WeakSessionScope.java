@@ -36,7 +36,7 @@ import java.util.WeakHashMap;
  * is created. It is expected that the container scope is request scope,
  * and after opening the request scope, the session is (re-)opened.
  */
-public class WeakSessionScope implements Scope {
+public class WeakSessionScope implements SeparatingScope {
    private Map<Object, Scope> singletonScopes = new WeakHashMap<>();
    private Scope containerScope;
 

@@ -18,14 +18,13 @@
 
 package com.vanillasource.jaywire.standalone;
 
-import com.vanillasource.jaywire.Scope;
 import com.vanillasource.jaywire.Factory;
 
 /**
  * An implementation of a thread local scope that is basically
  * a singleton scope in a thread local variable. Scope is thread-safe.
  */
-public class ThreadLocalScope implements Scope {
+public class ThreadLocalScope implements SeparatingScope {
    private ThreadLocal<SingletonScope> threadLocalSingletons = 
       ThreadLocal.withInitial(() -> new SingletonScope());
 

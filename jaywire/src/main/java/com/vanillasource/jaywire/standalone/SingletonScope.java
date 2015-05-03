@@ -18,7 +18,6 @@
 
 package com.vanillasource.jaywire.standalone;
 
-import com.vanillasource.jaywire.Scope;
 import com.vanillasource.jaywire.Factory;
 import java.util.Map;
 import java.util.HashMap;
@@ -30,7 +29,7 @@ import java.util.HashMap;
  * and reentrant, which means during an initialization of a
  * single object other may also initialize as singleton scope.
  */
-public class SingletonScope implements Scope {
+public class SingletonScope implements SeparatingScope {
    private Map<Object, Object> instances = new HashMap<>();
 
    @Override

@@ -23,19 +23,32 @@ import org.testng.annotations.BeforeMethod;
 import static org.mockito.Mockito.*;
 import static org.testng.Assert.*;
 import com.vanillasource.jaywire.Factory;
+import java.util.function.Supplier;
+import static com.vanillasource.jaywire.standalone.SerializationUtils.*;
 
 @Test
 public class WeakSessionScopeTests {
    private DelimitedRequestScope requestScope;
    private WeakSessionScope scope;
 
-   public void testProducesOneObjectPerRequest() {
+   public void testProducesOneObjectPerSession() {
       Factory<Object> objectFactory = () -> new Object();
       Object session = new Object();
       scope.open(session);
 
       Object result1 = scope.get(objectFactory);
       Object result2 = scope.get(objectFactory);
+
+      assertSame(result1, result2);
+   }
+
+   public void testProducesOneObjectPerSessionEventAfterDeserialization() throws Exception {
+      Supplier<Object> supplier = scope.apply(() -> new Object());
+      Object session = new Object();
+      scope.open(session);
+
+      Object result1 = supplier.get();
+      Object result2 = serializeThenDeserialize(supplier).get();
 
       assertSame(result1, result2);
    }
@@ -54,7 +67,23 @@ public class WeakSessionScopeTests {
       assertNotSame(result1, result2);
    }
 
-   public void testProcudesSameObjectInNewRequest() {
+   @SuppressWarnings("unchecked")
+   public void testProcudesAnotherObjectInNewSessionEvenAfterDeserialization() throws Exception {
+      Supplier<Object> supplier = scope.apply(() -> new Object());
+      Object session1 = new Object();
+      Object session2 = new Object();
+
+      scope.open(session1);
+      Object result1 = supplier.get();
+      byte[] supplierBytes = serialize(supplier);
+      requestScope.open();
+      scope.open(session2);
+      Object result2 = deserialize(supplier.getClass(), supplierBytes).get();
+
+      assertNotSame(result1, result2);
+   }
+
+   public void testProcudesSameObjectInSameSession() {
       Factory<Object> objectFactory = () -> new Object();
       Object session1 = new Object();
 

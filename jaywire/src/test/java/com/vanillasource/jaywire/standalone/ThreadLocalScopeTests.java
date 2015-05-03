@@ -23,15 +23,26 @@ import static org.mockito.Mockito.*;
 import static org.testng.Assert.*;
 import com.vanillasource.jaywire.Factory;
 import java.util.function.Supplier;
+import static com.vanillasource.jaywire.standalone.SerializationUtils.*;
 
 @Test
 public class ThreadLocalScopeTests {
    public void testProducesOneObjectPerThread() throws InterruptedException {
       ThreadLocalScope scope = new ThreadLocalScope();
-      Factory<Object> objectSupplier = () -> new Object();
+      Supplier<Object> objectSupplier = scope.apply(() -> new Object());
 
-      Object result1 = threadExecute(scope, objectSupplier);
-      Object result2 = threadExecute(scope, objectSupplier);
+      Object result1 = threadExecute(objectSupplier);
+      Object result2 = threadExecute(objectSupplier);
+
+      assertNotSame(result1, result2);
+   }
+
+   public void testProducesOneObjectPerThreadEvenAfterDeserialization() throws Exception {
+      ThreadLocalScope scope = new ThreadLocalScope();
+      Supplier<Object> objectSupplier = scope.apply(() -> new Object());
+
+      Object result1 = threadExecute(objectSupplier);
+      Object result2 = threadExecute(serializeThenDeserialize(objectSupplier));
 
       assertNotSame(result1, result2);
    }
@@ -46,8 +57,19 @@ public class ThreadLocalScopeTests {
       assertSame(result1, result2);
    }
 
-   private Object threadExecute(ThreadLocalScope scope, Factory<Object> supplier) throws InterruptedException {
-      ObjectProducer producer = new ObjectProducer(scope.apply(supplier));
+   public void testReturnsSameObjectInSameThreadEvenAfterDeserialization() throws Exception {
+      ThreadLocalScope scope = new ThreadLocalScope();
+      Supplier<Object> objectSupplier = scope.apply( () -> new Object() );
+
+      Object result1 = objectSupplier.get();
+      Supplier<Object> deserializedObjectSupplier = serializeThenDeserialize(objectSupplier);
+      Object result2 = deserializedObjectSupplier.get();
+
+      assertSame(result1, result2);
+   }
+
+   private Object threadExecute(Supplier<Object> supplier) throws InterruptedException {
+      ObjectProducer producer = new ObjectProducer(supplier);
       Thread thread = new Thread(producer);
       thread.start();
       thread.join();

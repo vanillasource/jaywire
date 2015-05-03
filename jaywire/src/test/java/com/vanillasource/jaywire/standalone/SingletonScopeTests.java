@@ -20,7 +20,9 @@ package com.vanillasource.jaywire.standalone;
 
 import org.testng.annotations.Test;
 import static org.testng.Assert.*;
+import java.util.function.Supplier;
 import com.vanillasource.jaywire.Factory;
+import static com.vanillasource.jaywire.standalone.SerializationUtils.*;
 
 @Test
 public class SingletonScopeTests {
@@ -32,6 +34,17 @@ public class SingletonScopeTests {
 
       Object result1 = scope.get(supplier);
       Object result2 = scope.get(supplier);
+
+      assertSame(result1, result2);
+   }
+
+   public void testSupplierUserOnlyOnceEvenAfterDeserialize() throws Exception {
+      SingletonScope scope = new SingletonScope();
+      Supplier<Object> supplier = scope.apply( () -> new Object() );
+
+      Object result1 = supplier.get();
+      Supplier<Object> deserializedSupplier = serializeThenDeserialize(supplier);
+      Object result2 = deserializedSupplier.get();
 
       assertSame(result1, result2);
    }

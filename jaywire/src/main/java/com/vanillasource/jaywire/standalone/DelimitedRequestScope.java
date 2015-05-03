@@ -27,7 +27,7 @@ import com.vanillasource.jaywire.Factory;
  * that can guarantee that only one request is open
  * at any time.
  */
-public class DelimitedRequestScope implements Scope {
+public class DelimitedRequestScope implements SeparatingScope {
    private Scope containerScope;
 
    public DelimitedRequestScope(Scope containerScope) {

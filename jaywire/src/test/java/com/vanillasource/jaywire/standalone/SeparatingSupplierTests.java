@@ -21,10 +21,11 @@ package com.vanillasource.jaywire.standalone;
 import org.testng.annotations.Test;
 import static org.mockito.Mockito.*;
 import static org.testng.Assert.*;
-import java.io.*;
 import com.vanillasource.jaywire.Scope;
 import com.vanillasource.jaywire.Factory;
 import java.util.function.Supplier;
+import java.io.*;
+import static com.vanillasource.jaywire.standalone.SerializationUtils.*;
 
 @Test
 public class SeparatingSupplierTests {
@@ -65,18 +66,6 @@ public class SeparatingSupplierTests {
       ((SeparatingSupplier<Object>) supplier).resetVMID();
 
       serializeThenDeserialize(supplier);
-   }
-
-   @SuppressWarnings("unchecked")
-   private <T> T serializeThenDeserialize(T object) throws Exception {
-      ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
-      ObjectOutputStream objectOut = new ObjectOutputStream(byteOut);
-      objectOut.writeObject(object);
-      objectOut.close();
-
-      ByteArrayInputStream byteIn = new ByteArrayInputStream(byteOut.toByteArray());
-      ObjectInputStream objectIn = new ObjectInputStream(byteIn);
-      return (T) objectIn.readObject();
    }
 
    public static class NonSerializableScope implements Scope {
