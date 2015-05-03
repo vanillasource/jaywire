@@ -4,7 +4,7 @@
    <groupId>com.vanillasource.jaywire</groupId>
    <artifactId>jaywire-parent</artifactId>
    <packaging>pom</packaging>
-   <version>1.0.2</version>
+   <version>1.0.3-SNAPSHOT</version>
    <name>JayWire Parent</name>
    <description>JayWire Projects</description>
    <url>https://github.com/vanillasource/jaywire</url>
@@ -38,7 +38,7 @@
       <connection>scm:git:git@github.com:vanillasource/jaywire.git</connection>
       <developerConnection>scm:git:git@github.com:vanillasource/jaywire.git</developerConnection>
       <url>git@github.com:vanillasource/jaywire.git</url>
-     <tag>jaywire-parent-1.0.2</tag>
+     <tag>HEAD</tag>
    </scm>
 
    <distributionManagement>
