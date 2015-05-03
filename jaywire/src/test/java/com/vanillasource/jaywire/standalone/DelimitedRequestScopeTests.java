@@ -21,13 +21,13 @@ package com.vanillasource.jaywire.standalone;
 import org.testng.annotations.Test;
 import static org.mockito.Mockito.*;
 import static org.testng.Assert.*;
-import java.util.function.Supplier;
+import com.vanillasource.jaywire.Factory;
 
 @Test
 public class DelimitedRequestScopeTests {
    public void testProducesOneObjectPerRequest() {
       DelimitedRequestScope scope = new DelimitedRequestScope(new SingletonScope());
-      Supplier<Object> objectSupplier = () -> new Object();
+      Factory<Object> objectSupplier = () -> new Object();
 
       Object result1 = scope.get(objectSupplier);
       Object result2 = scope.get(objectSupplier);
@@ -37,7 +37,7 @@ public class DelimitedRequestScopeTests {
 
    public void testProcudesAnotherObjectAfterOpen() {
       DelimitedRequestScope scope = new DelimitedRequestScope(new SingletonScope());
-      Supplier<Object> objectSupplier = () -> new Object();
+      Factory<Object> objectSupplier = () -> new Object();
 
       Object result1 = scope.get(objectSupplier);
       scope.open();
@@ -48,7 +48,7 @@ public class DelimitedRequestScopeTests {
 
    public void testProcudesAnotherObjectAfterClose() {
       DelimitedRequestScope scope = new DelimitedRequestScope(new SingletonScope());
-      Supplier<Object> objectSupplier = () -> new Object();
+      Factory<Object> objectSupplier = () -> new Object();
 
       Object result1 = scope.get(objectSupplier);
       scope.open();

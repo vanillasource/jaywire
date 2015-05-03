@@ -19,7 +19,7 @@
 package com.vanillasource.jaywire.standalone;
 
 import com.vanillasource.jaywire.Scope;
-import java.util.function.Supplier;
+import com.vanillasource.jaywire.Factory;
 import java.util.Map;
 import java.util.WeakHashMap;
 
@@ -74,7 +74,7 @@ public class WeakSessionScope implements Scope {
    }
 
    @Override
-   public <T> T get(Supplier<T> factory) {
+   public <T> T get(Factory<T> factory) {
       return getContainer().get().get(factory);
    }
 

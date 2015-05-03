@@ -19,9 +19,8 @@
 package com.vanillasource.jaywire.standalone;
 
 import org.testng.annotations.Test;
-import static org.mockito.Mockito.*;
 import static org.testng.Assert.*;
-import java.util.function.Supplier;
+import com.vanillasource.jaywire.Factory;
 
 @Test
 public class SingletonScopeTests {
@@ -29,7 +28,7 @@ public class SingletonScopeTests {
    @SuppressWarnings("unchecked")
    public void testSupplierUsedOnlyOnce() {
       SingletonScope scope = new SingletonScope();
-      Supplier<Object> supplier = mock(Supplier.class);
+      Factory<Object> supplier = () -> new Object();
 
       Object result1 = scope.get(supplier);
       Object result2 = scope.get(supplier);

@@ -36,7 +36,7 @@ public interface RequestScopeSupport {
     * Convenience method to produce request scope suppliers easily. Equals
     * <code>getRequestScope().apply(&lt;supplier&gt;)</code>.
     */
-   default <T> Supplier<T> requestScope(Supplier<T> supplier) {
+   default <T> Supplier<T> requestScope(Factory<T> supplier) {
       return getRequestScope().apply(supplier);
    }
 }

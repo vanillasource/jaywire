@@ -31,13 +31,13 @@ public interface Scope {
     * instance may be a cached instance, or may be created through
     * the factory depending on the scope semantics.
     */
-   <T> T get(Supplier<T> factory);
+   <T> T get(Factory<T> factory);
 
    /**
     * Apply the semantics of this scope to the provided supplier. The returned
     * supplier behaves as the <code>get()</code> method of this scope.
     */
-   default <T> Supplier<T> apply(Supplier<T> factory) {
+   default <T> Supplier<T> apply(Factory<T> factory) {
       return () -> get(factory);
    }
 }

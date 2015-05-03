@@ -19,7 +19,7 @@
 package com.vanillasource.jaywire.standalone;
 
 import com.vanillasource.jaywire.Scope;
-import java.util.function.Supplier;
+import com.vanillasource.jaywire.Factory;
 
 /**
  * A request scope which has to be explicitly delimited.
@@ -54,7 +54,7 @@ public class DelimitedRequestScope implements Scope {
    }
 
    @Override
-   public <T> T get(Supplier<T> factory) {
+   public <T> T get(Factory<T> factory) {
       return getContainer().get().get(factory);
    }
 

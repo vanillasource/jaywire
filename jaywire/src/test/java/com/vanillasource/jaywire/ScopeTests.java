@@ -38,7 +38,7 @@ public class ScopeTests {
 
       @Override
       @SuppressWarnings("unchecked")
-      public <T> T get(Supplier<T> supplier) {
+      public <T> T get(Factory<T> supplier) {
          return (T) instance;
       }
    }

@@ -36,7 +36,7 @@ public interface SessionScopeSupport {
     * Convenience method to produce session scope suppliers easily. Equals
     * <code>getSessionScope().apply(&lt;supplier&gt;)</code>.
     */
-   default <T> Supplier<T> sessionScope(Supplier<T> supplier) {
+   default <T> Supplier<T> sessionScope(Factory<T> supplier) {
       return getSessionScope().apply(supplier);
    }
 }

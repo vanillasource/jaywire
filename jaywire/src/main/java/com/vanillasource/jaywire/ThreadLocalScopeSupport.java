@@ -36,7 +36,7 @@ public interface ThreadLocalScopeSupport {
     * Convenience method to produce thread local supplier easily. Equals
     * <code>getThreadLocalScope().apply(&lt;supplier&gt;)</code>.
     */
-   default <T> Supplier<T> threadLocal(Supplier<T> supplier) {
+   default <T> Supplier<T> threadLocal(Factory<T> supplier) {
       return getThreadLocalScope().apply(supplier);
    }
 }

@@ -19,26 +19,27 @@
 package com.vanillasource.jaywire.standalone;
 
 import com.vanillasource.jaywire.Scope;
+import com.vanillasource.jaywire.Factory;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.function.Supplier;
 
 /**
  * An implementation of a singleton scope that keeps all
- * instances in an internal map. This scope is thread-safe,
+ * already instantiated objects in an internal map indexed by
+ * the <i>kind</i> object returned by the factory. This scope is thread-safe,
  * and reentrant, which means during an initialization of a
  * single object other may also initialize as singleton scope.
  */
 public class SingletonScope implements Scope {
-   private Map<Class<?>, Object> instances = new HashMap<>();
+   private Map<Object, Object> instances = new HashMap<>();
 
    @Override
    @SuppressWarnings("unchecked")
-   public synchronized <T> T get(Supplier<T> supplier) {
-      T instance = (T) instances.get(supplier.getClass());
+   public synchronized <T> T get(Factory<T> factory) {
+      T instance = (T) instances.get(factory.getKind());
       if (instance == null) {
-         instance = supplier.get();
-         instances.put(supplier.getClass(), instance);
+         instance = factory.get();
+         instances.put(factory.getKind(), instance);
       }
       return instance;
    }

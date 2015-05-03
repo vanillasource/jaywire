@@ -21,13 +21,14 @@ package com.vanillasource.jaywire.standalone;
 import org.testng.annotations.Test;
 import static org.mockito.Mockito.*;
 import static org.testng.Assert.*;
+import com.vanillasource.jaywire.Factory;
 import java.util.function.Supplier;
 
 @Test
 public class ThreadLocalScopeTests {
    public void testProducesOneObjectPerThread() throws InterruptedException {
       ThreadLocalScope scope = new ThreadLocalScope();
-      Supplier<Object> objectSupplier = () -> new Object();
+      Factory<Object> objectSupplier = () -> new Object();
 
       Object result1 = threadExecute(scope, objectSupplier);
       Object result2 = threadExecute(scope, objectSupplier);
@@ -37,7 +38,7 @@ public class ThreadLocalScopeTests {
 
    public void testReturnsSameObjectInSameThread() {
       ThreadLocalScope scope = new ThreadLocalScope();
-      Supplier<Object> objectSupplier = () -> new Object();
+      Factory<Object> objectSupplier = () -> new Object();
 
       Object result1 = scope.get(objectSupplier);
       Object result2 = scope.get(objectSupplier);
@@ -45,7 +46,7 @@ public class ThreadLocalScopeTests {
       assertSame(result1, result2);
    }
 
-   private Object threadExecute(ThreadLocalScope scope, Supplier<Object> supplier) throws InterruptedException {
+   private Object threadExecute(ThreadLocalScope scope, Factory<Object> supplier) throws InterruptedException {
       ObjectProducer producer = new ObjectProducer(scope.apply(supplier));
       Thread thread = new Thread(producer);
       thread.start();

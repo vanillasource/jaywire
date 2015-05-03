@@ -19,7 +19,7 @@
 package com.vanillasource.jaywire.standalone;
 
 import com.vanillasource.jaywire.Scope;
-import java.util.function.Supplier;
+import com.vanillasource.jaywire.Factory;
 
 /**
  * An implementation of a thread local scope that is basically
@@ -30,8 +30,8 @@ public class ThreadLocalScope implements Scope {
       ThreadLocal.withInitial(() -> new SingletonScope());
 
    @Override
-   public <T> T get(Supplier<T> supplier) {
-      return threadLocalSingletons.get().get(supplier);
+   public <T> T get(Factory<T> factory) {
+      return threadLocalSingletons.get().get(factory);
    }
 }
 

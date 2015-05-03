@@ -22,7 +22,7 @@ import org.testng.annotations.Test;
 import org.testng.annotations.BeforeMethod;
 import static org.mockito.Mockito.*;
 import static org.testng.Assert.*;
-import java.util.function.Supplier;
+import com.vanillasource.jaywire.Factory;
 
 @Test
 public class WeakSessionScopeTests {
@@ -30,39 +30,39 @@ public class WeakSessionScopeTests {
    private WeakSessionScope scope;
 
    public void testProducesOneObjectPerRequest() {
-      Supplier<Object> objectSupplier = () -> new Object();
+      Factory<Object> objectFactory = () -> new Object();
       Object session = new Object();
       scope.open(session);
 
-      Object result1 = scope.get(objectSupplier);
-      Object result2 = scope.get(objectSupplier);
+      Object result1 = scope.get(objectFactory);
+      Object result2 = scope.get(objectFactory);
 
       assertSame(result1, result2);
    }
 
    public void testProcudesAnotherObjectInNewSession() {
-      Supplier<Object> objectSupplier = () -> new Object();
+      Factory<Object> objectFactory = () -> new Object();
       Object session1 = new Object();
       Object session2 = new Object();
 
       scope.open(session1);
-      Object result1 = scope.get(objectSupplier);
+      Object result1 = scope.get(objectFactory);
       requestScope.open();
       scope.open(session2);
-      Object result2 = scope.get(objectSupplier);
+      Object result2 = scope.get(objectFactory);
 
       assertNotSame(result1, result2);
    }
 
    public void testProcudesSameObjectInNewRequest() {
-      Supplier<Object> objectSupplier = () -> new Object();
+      Factory<Object> objectFactory = () -> new Object();
       Object session1 = new Object();
 
       scope.open(session1);
-      Object result1 = scope.get(objectSupplier);
+      Object result1 = scope.get(objectFactory);
       requestScope.open();
       scope.open(session1);
-      Object result2 = scope.get(objectSupplier);
+      Object result2 = scope.get(objectFactory);
 
       assertSame(result1, result2);
    }
