@@ -40,7 +40,7 @@ public class SeparatingSupplier<T> implements Supplier<T>, Serializable {
 
    private VMID sourceVM;
    private long scopeId;
-   private Serializable kind;
+   private Object kind;
    private transient Scope scope;
    private transient Factory<T> factory;
 
@@ -119,13 +119,13 @@ public class SeparatingSupplier<T> implements Supplier<T>, Serializable {
    public static class ScopeEntry {
       private static AtomicLong NEXT_ID = new AtomicLong();
       private long id = NEXT_ID.getAndIncrement();
-      private Map<Serializable, Factory<?>> factoriesByKind = new HashMap<>();
+      private Map<Object, Factory<?>> factoriesByKind = new HashMap<>();
 
       public long getId() {
          return id;
       }
 
-      public Factory<?> getFactory(Serializable kind) {
+      public Factory<?> getFactory(Object kind) {
          return factoriesByKind.get(kind);
       }
 

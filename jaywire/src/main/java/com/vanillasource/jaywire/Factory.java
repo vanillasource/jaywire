@@ -33,7 +33,7 @@ public interface Factory<T> extends Supplier<T> {
     * of object. This returned object should have its
     * identity methods implemented.
     */
-   default Serializable getKind() {
+   default Object getKind() {
       return getClass().getName();
    }
 }
