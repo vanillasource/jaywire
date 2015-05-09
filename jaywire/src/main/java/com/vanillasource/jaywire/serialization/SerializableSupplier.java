@@ -24,6 +24,7 @@ import java.io.ObjectOutputStream;
 import java.io.ObjectInputStream;
 import java.util.function.Supplier;
 import com.vanillasource.jaywire.Factory;
+import com.vanillasource.jaywire.Scope;
 import com.vanillasource.jaywire.serialization.DissociatingSupplierStorage.Key;
 
 /**
@@ -34,16 +35,18 @@ import com.vanillasource.jaywire.serialization.DissociatingSupplierStorage.Key;
 public class SerializableSupplier<T> implements Supplier<T>, Serializable {
    private transient DissociatingSupplierStorage storage;
    private transient Factory<T> factory;
+   private transient Scope scope;
    private Key<T> key;
 
-   public SerializableSupplier(DissociatingSupplierStorage storage, Factory<T> factory) {
+   public SerializableSupplier(DissociatingSupplierStorage storage, Scope scope, Factory<T> factory) {
       this.storage = storage;
       this.factory = factory;
+      this.scope = scope;
    }
 
    @Override
    public T get() {
-      return factory.get();
+      return scope.get(factory);
    }
 
    /**
@@ -63,6 +66,7 @@ public class SerializableSupplier<T> implements Supplier<T>, Serializable {
       SerializableSupplier<T> stored = (SerializableSupplier<T>) DissociatingSupplierStorage.get(key);
       this.factory = stored.factory;
       this.storage = stored.storage;
+      this.scope = stored.scope;
    }
 }
 

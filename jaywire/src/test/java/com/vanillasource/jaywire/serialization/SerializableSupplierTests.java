@@ -25,12 +25,14 @@ import com.vanillasource.jaywire.Factory;
 import static org.mockito.Mockito.*;
 import static com.vanillasource.jaywire.SerializationUtils.*;
 import static com.vanillasource.jaywire.GarbageUtils.*;
+import com.vanillasource.jaywire.Scope;
 
 @Test
 public class SerializableSupplierTests {
    private DissociatingSupplierStorage storage;
    private SerializableSupplier<Object> supplier;
    private Factory<Object> factory;
+   private Scope scope;
 
    public void testSupplierGetsObjectFromFactory() {
       supplier.get();
@@ -60,8 +62,14 @@ public class SerializableSupplierTests {
    protected void setUp() {
       storage = new DissociatingSupplierStorage();
       factory = mock(Factory.class);
+      scope = new Scope() {
+         @Override
+         public <T> T get(Factory<T> factory) {
+            return factory.get();
+         }
+      };
       when(factory.getKind()).thenReturn(new Object());
-      supplier = new SerializableSupplier<Object>(storage, factory);
+      supplier = new SerializableSupplier<Object>(storage, scope, factory);
    }
 
 }

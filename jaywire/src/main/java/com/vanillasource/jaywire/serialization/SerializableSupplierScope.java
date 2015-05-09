@@ -16,26 +16,18 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package com.vanillasource.jaywire.standalone;
+package com.vanillasource.jaywire.serialization;
 
 import com.vanillasource.jaywire.Scope;
 import com.vanillasource.jaywire.Factory;
 import java.util.function.Supplier;
 
-/**
- * A scope implementation that returns serializable
- * suppliers. 
- */
-public interface SeparatingScope extends Scope {
-   /**
-    * Return a supplier that can be serialized but does
-    * not pull the factory or any of the environment with it.
-    * This supplier will only be valid if deserialized to the
-    * same JVM, throws exception otherwise.
-    */
-   default <T> Supplier<T> apply(Factory<T> factory) {
-      return new SeparatingSupplier<T>(this, factory);
+public abstract class SerializableSupplierScope implements Scope {
+   private DissociatingSupplierStorage storage = new DissociatingSupplierStorage();
+
+   @Override
+   public <T> Supplier<T> apply(Factory<T> factory) {
+      return new SerializableSupplier<T>(storage, this, factory);
    }
 }
-
 
