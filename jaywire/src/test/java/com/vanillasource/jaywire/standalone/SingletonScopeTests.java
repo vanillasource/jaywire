@@ -22,7 +22,7 @@ import org.testng.annotations.Test;
 import static org.testng.Assert.*;
 import java.util.function.Supplier;
 import com.vanillasource.jaywire.Factory;
-import static com.vanillasource.jaywire.standalone.SerializationUtils.*;
+import static com.vanillasource.jaywire.SerializationUtils.*;
 
 @Test
 public class SingletonScopeTests {

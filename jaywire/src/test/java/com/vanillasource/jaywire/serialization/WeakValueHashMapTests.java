@@ -22,14 +22,12 @@ import org.testng.annotations.Test;
 import org.testng.annotations.BeforeMethod;
 import java.util.Iterator;
 import java.util.Map;
-import java.lang.ref.WeakReference;
-import java.lang.ref.ReferenceQueue;
 import static org.testng.Assert.*;
+import static com.vanillasource.jaywire.GarbageUtils.*;
 
 @Test
 public class WeakValueHashMapTests {
    private WeakValueHashMap<String, Object> map;
-   private ReferenceQueue<Object> referenceQueue;
 
    public void testGetReturnsObjectPutIn() {
       Object value = new Object();
@@ -62,13 +60,11 @@ public class WeakValueHashMapTests {
    }
 
    public void testEntryIsRemovedOnPutIfValueIsGarbageCollected() throws Exception {
-      Object value = new Object();
-      map.put("key", value);
-
-      WeakReference<Object> reference = new WeakReference<Object>(value, referenceQueue);
-      value = null;
-      System.gc();
-      referenceQueue.remove();
+      waitObjectCollected( () -> {
+         Object value = new Object();
+         map.put("key", value);
+         return value;
+      });
 
       map.put("key2", new Object());
 
@@ -78,7 +74,6 @@ public class WeakValueHashMapTests {
    @BeforeMethod
    protected void setUp() {
       map = new WeakValueHashMap<String, Object>();
-      referenceQueue = new ReferenceQueue<Object>();
    }
 }
 

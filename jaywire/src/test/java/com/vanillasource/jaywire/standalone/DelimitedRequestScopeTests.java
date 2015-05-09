@@ -22,7 +22,7 @@ import org.testng.annotations.Test;
 import static org.mockito.Mockito.*;
 import static org.testng.Assert.*;
 import com.vanillasource.jaywire.Factory;
-import static com.vanillasource.jaywire.standalone.SerializationUtils.*;
+import static com.vanillasource.jaywire.SerializationUtils.*;
 import java.util.function.Supplier;
 
 @Test

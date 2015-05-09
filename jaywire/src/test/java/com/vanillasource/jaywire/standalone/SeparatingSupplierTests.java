@@ -25,7 +25,7 @@ import com.vanillasource.jaywire.Scope;
 import com.vanillasource.jaywire.Factory;
 import java.util.function.Supplier;
 import java.io.*;
-import static com.vanillasource.jaywire.standalone.SerializationUtils.*;
+import static com.vanillasource.jaywire.SerializationUtils.*;
 
 @Test
 public class SeparatingSupplierTests {
