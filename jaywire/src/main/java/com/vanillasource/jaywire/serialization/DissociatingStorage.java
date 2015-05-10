@@ -19,22 +19,21 @@
 package com.vanillasource.jaywire.serialization;
 
 import java.io.Serializable;
-import java.util.function.Supplier;
 import java.util.Map;
 import java.util.HashMap;
 import java.rmi.dgc.VMID;
 
 /**
- * Stores the suppliers and gives back serializable keys
- * dissociated from the supplier instance to access it at any later point from
+ * Stores objects and gives back serializable keys
+ * dissociated the given instance to access it at any later point from
  * a static context.
- * The supplier instance is bound to the storage instance, and can be
+ * The supplied instance is bound to the storage instance, and can be
  * garbage collected when the storage instance is garbage collected.
  * Note that if a storage object is garbage collected, all keys
  * emitted by the storage become automatically invalid.
  */
-public class DissociatingSupplierStorage {
-   private static final Map<Integer, DissociatingSupplierStorage> STORAGES = new WeakValueHashMap<>();
+public class DissociatingStorage {
+   private static final Map<Integer, DissociatingStorage> STORAGES = new WeakValueHashMap<>();
    private static final VMID THIS_VM = new VMID();
    private static int nextStorageId = 0;
 
@@ -42,7 +41,7 @@ public class DissociatingSupplierStorage {
    private Map<Object, Entry> entriesByKind;
    private Map<Integer, Entry> entriesById;
 
-   public DissociatingSupplierStorage() {
+   public DissociatingStorage() {
       synchronized (STORAGES) {
          if (nextStorageId == Integer.MAX_VALUE) {
             throw new IllegalStateException("used more storage objects that can be stored in a map");
@@ -55,25 +54,25 @@ public class DissociatingSupplierStorage {
    }
 
    /**
-    * Put a supplier for a specific kind into the store. Note: a supplier
+    * Put an object for a specific kind into the store. Note: an object
     * of one <i>kind</i> will be stored only once.
     * @return A serializable key that is dissociated from the supplier
     * and kind objects. Both are garbage collected together with the
     * instance of the storage, at which point all already serialized keys
     * will become invalid.
     */
-   public synchronized <T> Key<T> put(Object kind, Supplier<T> supplier) {
-      int supplierId = ensureStoredAndGetId(kind, supplier);
+   public synchronized <T> Key<T> put(Object kind, T object) {
+      int supplierId = ensureStoredAndGetId(kind, object);
       return new Key<T>(THIS_VM, storageId, supplierId);
    }
 
-   private int ensureStoredAndGetId(Object kind, Supplier<?> supplier) {
+   private int ensureStoredAndGetId(Object kind, Object object) {
       if (entriesById.size() == Integer.MAX_VALUE) {
          throw new IllegalStateException("used more kinds than could be stored in a map");
       }
       Entry entry = entriesByKind.get(kind);
       if (entry == null) {
-         entry = new Entry(entriesById.size(), supplier);
+         entry = new Entry(entriesById.size(), object);
          entriesByKind.put(kind, entry);
          entriesById.put(entry.getId(), entry);
       }
@@ -81,14 +80,13 @@ public class DissociatingSupplierStorage {
    }
 
    /**
-    * Retrieve a <code>Factory</code> from the storage
-    * it was stored in.
+    * Retrieve an object from the storage it was stored in.
     */
-   public static <T> Supplier<T> get(Key<T> key) {
+   public static <T> T get(Key<T> key) {
       if (!key.getVmId().equals(THIS_VM)) {
          throw new IllegalStateException("the supplier key was serialized in a different VM, context can not be restored");
       }
-      DissociatingSupplierStorage storage = null;
+      DissociatingStorage storage = null;
       synchronized (STORAGES) {
          storage = STORAGES.get(key.getStorageId());
       }
@@ -99,12 +97,12 @@ public class DissociatingSupplierStorage {
    }
 
    @SuppressWarnings("unchecked")
-   private synchronized <T> Supplier<T> internalGet(Key<T> key) {
+   private synchronized <T> T internalGet(Key<T> key) {
       Entry entry = entriesById.get(key.getKindId());
       if (entry == null) {
          throw new IllegalStateException("the supplier kind in the given key was not known in storage");
       }
-      return (Supplier<T>) entry.getSupplier();
+      return (T) entry.getObject();
    }
 
    /**
@@ -154,19 +152,19 @@ public class DissociatingSupplierStorage {
 
    private static class Entry {
       private int id;
-      private Supplier<?> supplier;
+      private Object object;
 
-      private Entry(int id, Supplier<?> supplier) {
+      private Entry(int id, Object object) {
          this.id = id;
-         this.supplier = supplier;
+         this.object = object;
       }
 
       public int getId() {
          return id;
       }
 
-      public Supplier<?> getSupplier() {
-         return supplier;
+      public Object getObject() {
+         return object;
       }
    }
 }

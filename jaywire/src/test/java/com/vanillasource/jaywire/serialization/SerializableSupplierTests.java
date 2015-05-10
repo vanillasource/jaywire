@@ -20,16 +20,13 @@ package com.vanillasource.jaywire.serialization;
 
 import org.testng.annotations.Test;
 import org.testng.annotations.BeforeMethod;
-import static org.testng.Assert.*;
 import com.vanillasource.jaywire.Factory;
 import static org.mockito.Mockito.*;
-import static com.vanillasource.jaywire.SerializationUtils.*;
-import static com.vanillasource.jaywire.GarbageUtils.*;
 import com.vanillasource.jaywire.Scope;
 
 @Test
 public class SerializableSupplierTests {
-   private DissociatingSupplierStorage storage;
+   private DissociatingStorage storage;
    private SerializableSupplier<Object> supplier;
    private Factory<Object> factory;
    private Scope scope;
@@ -40,27 +37,10 @@ public class SerializableSupplierTests {
       verify(factory).get();
    }
 
-   public void testSupplierIsSerializable() throws Exception {
-      serializeThenDeserialize(supplier);
-   }
-
-   public void testSupplierReturnsSameObjectAfterDeserialization() throws Exception {
-      when(factory.get()).thenReturn(new Object());
-
-      Object object1 = supplier.get();
-      Object object2 = serializeThenDeserialize(supplier).get();
-
-      assertSame(object1, object2);
-   }
-
-   public void testSupplierCanBeSerializedAgainAfterDeserialization() throws Exception {
-      serializeThenDeserialize(serializeThenDeserialize(supplier));
-   }
-
    @BeforeMethod
    @SuppressWarnings("unchecked")
    protected void setUp() {
-      storage = new DissociatingSupplierStorage();
+      storage = new DissociatingStorage();
       factory = mock(Factory.class);
       scope = new Scope() {
          @Override
@@ -68,7 +48,6 @@ public class SerializableSupplierTests {
             return factory.get();
          }
       };
-      when(factory.getKind()).thenReturn(new Object());
       supplier = new SerializableSupplier<Object>(storage, scope, factory);
    }
 

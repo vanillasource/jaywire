@@ -24,57 +24,57 @@ import static org.testng.Assert.*;
 import static com.vanillasource.jaywire.SerializationUtils.*;
 import static com.vanillasource.jaywire.GarbageUtils.*;
 import java.util.function.Supplier;
-import com.vanillasource.jaywire.serialization.DissociatingSupplierStorage.Key;
+import com.vanillasource.jaywire.serialization.DissociatingStorage.Key;
 import java.util.List;
 import java.util.ArrayList;
 import java.rmi.dgc.VMID;
 
 @Test
-public class DissociatingSupplierStorageTests {
-   private DissociatingSupplierStorage storage;
+public class DissociatingStorageTests {
+   private DissociatingStorage storage;
    private Object kind;
    private Supplier<Object> supplier;
 
    public void testStoredSuppliersAreReturnsWithKey() {
-      Key<Object> key = storage.put(kind, supplier);
+      Key<Supplier<Object>> key = storage.put(kind, supplier);
 
-      Supplier<Object> supplierGot = DissociatingSupplierStorage.get(key);
+      Supplier<Object> supplierGot = DissociatingStorage.get(key);
 
       assertSame(supplierGot, supplier);
    }
 
    public void testKeyIsSerializable() throws Exception {
-      Key<Object> key = storage.put(kind, supplier);
+      Key<Supplier<Object>> key = storage.put(kind, supplier);
 
-      Key<Object> deserializedKey = serializeThenDeserialize(key);
+      Key<Supplier<Object>> deserializedKey = serializeThenDeserialize(key);
 
       assertEquals(deserializedKey, key);
    }
 
    public void testStoredSupplierCanBeReciveredWithDeserializedKey() throws Exception {
-      Key<Object> key = storage.put(kind, supplier);
+      Key<Supplier<Object>> key = storage.put(kind, supplier);
 
-      Supplier<Object> supplierGot = DissociatingSupplierStorage.get(serializeThenDeserialize(key));
+      Supplier<Object> supplierGot = DissociatingStorage.get(serializeThenDeserialize(key));
 
       assertSame(supplierGot, supplier);
    }
 
    public void testSupplierGetsGarbageCollectedWithStorage() {
       waitObjectCollected( () -> {
-         DissociatingSupplierStorage localStorage = new DissociatingSupplierStorage();
+         DissociatingStorage localStorage = new DissociatingStorage();
          Supplier<Object> localSupplier = new DummySupplier();
-         Key<Object> key = localStorage.put(kind, localSupplier);
+         Key<Supplier<Object>> key = localStorage.put(kind, localSupplier);
          return localSupplier;
       });
    }
 
    public void testSupplierGetsDissociatedFromKeyAndGetsGarbageCollectedEvenIfKeySurvives() {
-      List<Key<Object>> keys = new ArrayList<>();
+      List<Key<Supplier<Object>>> keys = new ArrayList<>();
 
       waitObjectCollected( () -> {
-         DissociatingSupplierStorage localStorage = new DissociatingSupplierStorage();
+         DissociatingStorage localStorage = new DissociatingStorage();
          Supplier<Object> localSupplier = new DummySupplier();
-         Key<Object> key = localStorage.put(kind, localSupplier);
+         Key<Supplier<Object>> key = localStorage.put(kind, localSupplier);
          keys.add(key);
          return localSupplier;
       });
@@ -82,36 +82,36 @@ public class DissociatingSupplierStorageTests {
 
    @Test(expectedExceptions = IllegalStateException.class)
    public void testSupplierCanNotBeRecoveredAfterStorageGetsGarbageCollected() {
-      List<Key<Object>> keys = new ArrayList<>();
+      List<Key<Supplier<Object>>> keys = new ArrayList<>();
 
       waitObjectCollected( () -> {
-         DissociatingSupplierStorage localStorage = new DissociatingSupplierStorage();
+         DissociatingStorage localStorage = new DissociatingStorage();
          Supplier<Object> localSupplier = new DummySupplier();
-         Key<Object> key = localStorage.put(kind, localSupplier);
+         Key<Supplier<Object>> key = localStorage.put(kind, localSupplier);
          keys.add(key);
          return localSupplier;
       });
 
-      DissociatingSupplierStorage.get(keys.get(0));
+      DissociatingStorage.get(keys.get(0));
    }
 
    @Test(expectedExceptions = IllegalStateException.class)
    public void testKeysFromOtherVMThrowException() {
-      DissociatingSupplierStorage.get(new Key<Object>(new VMID(), 1, 1));
+      DissociatingStorage.get(new Key<Supplier<Object>>(new VMID(), 1, 1));
    }
 
    @Test(expectedExceptions = IllegalStateException.class)
    public void testKeyForUnknownKindThrowsException() {
-      Key<Object> key = storage.put(kind, supplier);
+      Key<Supplier<Object>> key = storage.put(kind, supplier);
 
-      Key<Object> key2 = new Key<Object>(key.getVmId(), key.getStorageId(), key.getKindId()+1);
+      Key<Supplier<Object>> key2 = new Key<Supplier<Object>>(key.getVmId(), key.getStorageId(), key.getKindId()+1);
 
-      DissociatingSupplierStorage.get(key2);
+      DissociatingStorage.get(key2);
    }
 
    @BeforeMethod
    protected void setUp() {
-      storage = new DissociatingSupplierStorage();
+      storage = new DissociatingStorage();
       kind = new Object();
       supplier = () -> new Object();
    }

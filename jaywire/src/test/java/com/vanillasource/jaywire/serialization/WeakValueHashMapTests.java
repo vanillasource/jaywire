@@ -65,6 +65,7 @@ public class WeakValueHashMapTests {
          map.put("key", value);
          return value;
       });
+      Thread.sleep(10);
 
       map.put("key2", new Object());
 

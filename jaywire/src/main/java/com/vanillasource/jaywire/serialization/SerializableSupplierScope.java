@@ -23,7 +23,7 @@ import com.vanillasource.jaywire.Factory;
 import java.util.function.Supplier;
 
 public abstract class SerializableSupplierScope implements Scope {
-   private DissociatingSupplierStorage storage = new DissociatingSupplierStorage();
+   private DissociatingStorage storage = new DissociatingStorage();
 
    @Override
    public <T> Supplier<T> apply(Factory<T> factory) {

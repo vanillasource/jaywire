@@ -18,28 +18,20 @@
 
 package com.vanillasource.jaywire.serialization;
 
-import java.io.Serializable;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.ObjectInputStream;
 import java.util.function.Supplier;
 import com.vanillasource.jaywire.Factory;
 import com.vanillasource.jaywire.Scope;
-import com.vanillasource.jaywire.serialization.DissociatingSupplierStorage.Key;
 
-/**
- * A supplier that uses the <code>DissociatingSupplierStorage</code> to dissociate
- * itself from its context, serialize only the key from the storage, and then
- * reconstruct its context after deserialization.
- */
-public class SerializableSupplier<T> implements Supplier<T>, Serializable {
-   private transient DissociatingSupplierStorage storage;
-   private transient Factory<T> factory;
-   private transient Scope scope;
-   private Key<T> key;
+public class SerializableSupplier<T> extends DissociableObject implements Supplier<T> {
+   private Factory<T> factory;
+   private Scope scope;
 
-   public SerializableSupplier(DissociatingSupplierStorage storage, Scope scope, Factory<T> factory) {
-      this.storage = storage;
+   public SerializableSupplier() {
+      super();
+   }
+
+   public SerializableSupplier(DissociatingStorage storage, Scope scope, Factory<T> factory) {
+      super(storage, factory.getKind());
       this.factory = factory;
       this.scope = scope;
    }
@@ -47,26 +39,6 @@ public class SerializableSupplier<T> implements Supplier<T>, Serializable {
    @Override
    public T get() {
       return scope.get(factory);
-   }
-
-   /**
-    * Called before serialization, it initializes the dissociated key to be stored.
-    */
-   private void writeObject(ObjectOutputStream out) throws IOException {
-      key = storage.put(factory.getKind(), this);
-      out.defaultWriteObject();
-   }
-
-   /**
-    * Called after object deserialized, filling up transient fields from stored object.
-    */
-   @SuppressWarnings("unchecked")
-   private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-      in.defaultReadObject();
-      SerializableSupplier<T> stored = (SerializableSupplier<T>) DissociatingSupplierStorage.get(key);
-      this.factory = stored.factory;
-      this.storage = stored.storage;
-      this.scope = stored.scope;
    }
 }
 
