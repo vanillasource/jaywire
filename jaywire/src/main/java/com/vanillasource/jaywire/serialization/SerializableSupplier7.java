@@ -16,16 +16,26 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package com.vanillasource.jaywire;
+package com.vanillasource.jaywire.serialization;
 
-import java.util.function.Supplier;
-import java.io.Serializable;
+import com.vanillasource.function.Supplier7;
+import com.vanillasource.jaywire.Factory7;
 
-/**
- * Responsible for creating an object instance of a certain
- * <i>kind</i>. 
- */
-@FunctionalInterface
-public interface Factory<T> extends Supplier<T>, Kinded {
+public class SerializableSupplier7<P1, P2, P3, P4, P5, P6, P7, T> extends DissociableObject implements Supplier7<P1, P2, P3, P4, P5, P6, P7, T> {
+   private Factory7<P1, P2, P3, P4, P5, P6, P7, T> factory;
+
+   public SerializableSupplier7() {
+      super();
+   }
+
+   public SerializableSupplier7(DissociatingStorage storage, Factory7<P1, P2, P3, P4, P5, P6, P7, T> factory) {
+      super(storage, factory.getKind());
+      this.factory = factory;
+   }
+
+   @Override
+   public T get(P1 p1, P2 p2, P3 p3, P4 p4, P5 p5, P6 p6, P7 p7) {
+      return factory.get(p1, p2, p3, p4, p5, p6, p7);
+   }
 }
 

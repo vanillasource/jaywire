@@ -18,34 +18,20 @@
 
 package com.vanillasource.jaywire;
 
-import java.util.function.Supplier;
-
 /**
- * Common interface for scopes for dependency injection. A scope may
- * decide when and how many times to instantiate objects from the
- * given factory.
+ * A class which can be categorized with <i>kind</i>s.
+ * By default this <i>kind</i> is the classname of
+ * this object.
  */
-public interface Scope {
-   Scope FACTORY = new Scope() {
-      @Override
-      public <T> T get(Factory<T> factory) {
-         return factory.get();
-      }
-   };
-
+public interface Kinded {
    /**
-    * Get an instance of the given factory for this scope. This
-    * instance may be a cached instance, or may be created through
-    * the factory depending on the scope semantics.
+    * Returns an object representing the <i>kind</i>
+    * of object. This returned object should have its
+    * identity methods (<code>equals()</code> and <code>hashCode()</code>)
+    * implemented.
     */
-   <T> T get(Factory<T> factory);
-
-   /**
-    * Apply the semantics of this scope to the provided supplier. The returned
-    * supplier behaves as the <code>get()</code> method of this scope.
-    */
-   default <T> Supplier<T> apply(Factory<T> factory) {
-      return () -> get(factory);
+   default Object getKind() {
+      return getClass().getName();
    }
 }
 

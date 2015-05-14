@@ -18,7 +18,7 @@
 
 package com.vanillasource.jaywire;
 
-import java.util.function.Supplier;
+import com.vanillasource.function.Supplier2;
 import java.io.Serializable;
 
 /**
@@ -26,6 +26,6 @@ import java.io.Serializable;
  * <i>kind</i>. 
  */
 @FunctionalInterface
-public interface Factory<T> extends Supplier<T>, Kinded {
+public interface Factory2<P1, P2, T> extends Supplier2<P1, P2, T>, Kinded {
 }
 

@@ -18,6 +18,8 @@
 
 package com.vanillasource.jaywire.standalone;
 
+import com.vanillasource.jaywire.serialization.SerializableFactoryModule;
+
 /**
  * A module that combines all available functionality from
  * the standalone modules. Extend this class on the top of your
@@ -26,6 +28,7 @@ package com.vanillasource.jaywire.standalone;
 public abstract class StandaloneModule 
    extends SingletonScopeModule 
    implements ThreadLocalScopeModule, CloseableModule, 
-              DelimitedRequestScopeModule, WeakSessionScopeModule {
+              DelimitedRequestScopeModule, WeakSessionScopeModule,
+              SerializableFactoryModule {
 }
 
