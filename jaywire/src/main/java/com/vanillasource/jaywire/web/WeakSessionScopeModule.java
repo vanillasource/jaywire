@@ -32,9 +32,13 @@ import com.vanillasource.jaywire.serialization.SerializationSupport;
 public interface WeakSessionScopeModule
    extends SingletonScopeSupport, RequestScopeSupport, SessionScopeSupport, SerializationSupport {
 
+   default WeakSessionScope getWeakSessionScope() {
+      return singleton(() -> new WeakSessionScope(getRequestScope()));
+   }
+
    @Override
    default Scope getSessionScope() {
-      return singleton(() -> makeSupplierSerializable(new WeakSessionScope(getRequestScope())));
+      return singleton(() -> makeSupplierSerializable(getWeakSessionScope()));
    }
 }
 

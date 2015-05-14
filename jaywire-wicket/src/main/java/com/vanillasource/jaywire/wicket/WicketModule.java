@@ -19,6 +19,8 @@
 package com.vanillasource.jaywire.wicket;
 
 import com.vanillasource.jaywire.standalone.StandaloneModule;
+import com.vanillasource.jaywire.web.DelimitedRequestScopeModule;
+import com.vanillasource.jaywire.web.WeakSessionScopeModule;
 import org.apache.wicket.Application;
 import org.apache.wicket.Session;
 import org.apache.wicket.Page;
@@ -33,7 +35,9 @@ import java.util.function.Function;
 import java.util.Map;
 import java.util.HashMap;
 
-public abstract class WicketModule extends StandaloneModule {
+public abstract class WicketModule extends StandaloneModule
+      implements DelimitedRequestScopeModule, WeakSessionScopeModule {
+
    private Map<Class<?>, Function<PageParameters, ?>> pageFactories = new HashMap<>();
    
    /**
@@ -50,19 +54,19 @@ public abstract class WicketModule extends StandaloneModule {
       application.getRequestCycleListeners().add(new AbstractRequestCycleListener() {
          @Override
          public void onBeginRequest(RequestCycle requestCycle) {
-            getRequestScope().open();
+            getDelimetedRequestScope().open();
             // Force creation of session
             application.getSessionStore().getSessionId(requestCycle.getRequest(), true);
             Session session = application.fetchCreateAndSetSession(requestCycle);
             if (session == null) {
                throw new WicketRuntimeException("Could not create session, which is necessary for JayWire session scope.");
             }
-            getSessionScope().open(session);
+            getWeakSessionScope().open(session);
          }
 
          @Override
          public void onEndRequest(RequestCycle requestCycle) {
-            getRequestScope().close();
+            getDelimetedRequestScope().close();
          }
       });
       application.getApplicationListeners().add(new IApplicationListener() {

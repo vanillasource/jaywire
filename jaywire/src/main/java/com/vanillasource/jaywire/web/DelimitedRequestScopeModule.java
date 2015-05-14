@@ -33,9 +33,13 @@ import com.vanillasource.jaywire.serialization.SerializationSupport;
 public interface DelimitedRequestScopeModule 
    extends SingletonScopeSupport, RequestScopeSupport, ThreadLocalScopeSupport, SerializationSupport {
 
+   default DelimitedRequestScope getDelimetedRequestScope() {
+      return singleton(() -> new DelimitedRequestScope(getThreadLocalScope()));
+   }
+
    @Override
    default Scope getRequestScope() {
-      return singleton(() -> makeSupplierSerializable(new DelimitedRequestScope(getThreadLocalScope())));
+      return singleton(() -> makeSupplierSerializable(getDelimetedRequestScope()));
    }
 }
 

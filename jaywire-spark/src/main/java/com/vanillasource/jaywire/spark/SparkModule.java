@@ -19,6 +19,8 @@
 package com.vanillasource.jaywire.spark;
 
 import com.vanillasource.jaywire.standalone.StandaloneModule;
+import com.vanillasource.jaywire.web.DelimitedRequestScopeModule;
+import com.vanillasource.jaywire.web.WeakSessionScopeModule;
 import spark.Spark;
 
 /**
@@ -26,14 +28,15 @@ import spark.Spark;
  * wires automatically into Spark to handle request and
  * session scopes.
  */
-public abstract class SparkModule extends StandaloneModule {
+public abstract class SparkModule extends StandaloneModule
+      implements DelimitedRequestScopeModule, WeakSessionScopeModule {
    public SparkModule() {
       Spark.before((request, response) -> {
-         getRequestScope().open();
-         getSessionScope().open(request.session(true).raw());
+         getDelimetedRequestScope().open();
+         getWeakSessionScope().open(request.session(true).raw());
       });
       Spark.after((request, response) -> {
-         getRequestScope().close();
+         getDelimetedRequestScope().close();
       });
    }
 }

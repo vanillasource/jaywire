@@ -19,6 +19,8 @@
 package com.vanillasource.jaywire.servlet;
 
 import com.vanillasource.jaywire.standalone.StandaloneModule;
+import com.vanillasource.jaywire.web.DelimitedRequestScopeModule;
+import com.vanillasource.jaywire.web.WeakSessionScopeModule;
 import javax.servlet.ServletContextListener;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContext;
@@ -46,7 +48,8 @@ import java.io.IOException;
  * Either annotate the class with <code>WebListener</code> or register it
  * in the <i>web.xml</i> as a listener.
  */
-public abstract class ServletModule extends StandaloneModule implements ServletContextListener {
+public abstract class ServletModule extends StandaloneModule 
+      implements DelimitedRequestScopeModule, WeakSessionScopeModule, ServletContextListener {
    @Override
    public void contextInitialized(ServletContextEvent event) {
       ServletContext context = event.getServletContext();
@@ -62,7 +65,7 @@ public abstract class ServletModule extends StandaloneModule implements ServletC
 
          @Override
          public void sessionDestroyed(HttpSessionEvent event) {
-            getSessionScope().close(event.getSession());
+            getWeakSessionScope().close(event.getSession());
          }
       });
       context.addFilter("JayWireScopeFilter", new Filter() {
@@ -77,13 +80,13 @@ public abstract class ServletModule extends StandaloneModule implements ServletC
          @Override
          public void doFilter(ServletRequest request, 
                ServletResponse response, FilterChain chain) throws ServletException, IOException {
-            getRequestScope().open();
+            getDelimetedRequestScope().open();
             if (request instanceof HttpServletRequest) {
                HttpServletRequest httpRequest = (HttpServletRequest) request;
-               getSessionScope().open(httpRequest.getSession());
+               getWeakSessionScope().open(httpRequest.getSession());
             }
             chain.doFilter(request, response);
-            getRequestScope().close();
+            getDelimetedRequestScope().close();
          }
       }).addMappingForUrlPatterns(null, false, "/*");
       context.log("JayWire servlet module "+getClass().getName()+" activated");
