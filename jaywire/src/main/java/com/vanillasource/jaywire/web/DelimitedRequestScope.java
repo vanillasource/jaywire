@@ -16,10 +16,11 @@
   * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
   */
 
-package com.vanillasource.jaywire.standalone;
+package com.vanillasource.jaywire.web;
 
 import com.vanillasource.jaywire.Scope;
 import com.vanillasource.jaywire.Factory;
+import com.vanillasource.jaywire.standalone.SingletonScope;
 
 /**
  * A request scope which has to be explicitly delimited.

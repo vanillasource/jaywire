@@ -28,7 +28,6 @@ import com.vanillasource.jaywire.serialization.SerializationModule;
 public abstract class StandaloneModule 
    extends SingletonScopeModule 
    implements ThreadLocalScopeModule, CloseableModule, 
-              DelimitedRequestScopeModule, WeakSessionScopeModule,
               SerializationModule {
 }
 

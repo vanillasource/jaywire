@@ -36,14 +36,6 @@ public class StandaloneModuleTests {
       serializeThenDeserialize(module.threadLocal(() -> new Object()));
    }
 
-   public void testRequestScopeSupplierSerializable() throws Exception {
-      serializeThenDeserialize(module.requestScope(() -> new Object()));
-   }
-
-   public void testSessionScopeSupplierSerializable() throws Exception {
-      serializeThenDeserialize(module.sessionScope(() -> new Object()));
-   }
-
    @BeforeMethod
    protected void setUp() {
       module = new StandaloneModule() {

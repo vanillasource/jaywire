@@ -16,26 +16,25 @@
   * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
   */
 
-package com.vanillasource.jaywire.standalone;
+package com.vanillasource.jaywire.web;
 
 import com.vanillasource.jaywire.RequestScopeSupport;
 import com.vanillasource.jaywire.SingletonScopeSupport;
-import com.vanillasource.jaywire.ThreadLocalScopeSupport;
+import com.vanillasource.jaywire.SessionScopeSupport;
 import com.vanillasource.jaywire.Scope;
 import com.vanillasource.jaywire.serialization.SerializationSupport;
 
 /**
- * A module implementation that provides a request scope based on
- * the thread local scope. It assumes that each request will be handled
- * inside a single thread, and a single thread can not have two
- * requests at the same time.
+ * A module implementation that provides a session scope based on
+ * the request scope. The request scope has to be opened before
+ * the session is opened.
  */
-public interface DelimitedRequestScopeModule 
-   extends SingletonScopeSupport, RequestScopeSupport, ThreadLocalScopeSupport, SerializationSupport {
+public interface WeakSessionScopeModule
+   extends SingletonScopeSupport, RequestScopeSupport, SessionScopeSupport, SerializationSupport {
 
    @Override
-   default Scope getRequestScope() {
-      return singleton(() -> makeSupplierSerializable(new DelimitedRequestScope(getThreadLocalScope())));
+   default Scope getSessionScope() {
+      return singleton(() -> makeSupplierSerializable(new WeakSessionScope(getRequestScope())));
    }
 }
 
