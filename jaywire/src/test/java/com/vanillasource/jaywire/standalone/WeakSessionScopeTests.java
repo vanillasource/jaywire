@@ -24,7 +24,6 @@ import static org.mockito.Mockito.*;
 import static org.testng.Assert.*;
 import com.vanillasource.jaywire.Factory;
 import java.util.function.Supplier;
-import static com.vanillasource.jaywire.SerializationUtils.*;
 
 @Test
 public class WeakSessionScopeTests {
@@ -42,17 +41,6 @@ public class WeakSessionScopeTests {
       assertSame(result1, result2);
    }
 
-   public void testProducesOneObjectPerSessionEventAfterDeserialization() throws Exception {
-      Supplier<Object> supplier = scope.apply(() -> new Object());
-      Object session = new Object();
-      scope.open(session);
-
-      Object result1 = supplier.get();
-      Object result2 = serializeThenDeserialize(supplier).get();
-
-      assertSame(result1, result2);
-   }
-
    public void testProcudesAnotherObjectInNewSession() {
       Factory<Object> objectFactory = () -> new Object();
       Object session1 = new Object();
@@ -63,22 +51,6 @@ public class WeakSessionScopeTests {
       requestScope.open();
       scope.open(session2);
       Object result2 = scope.get(objectFactory);
-
-      assertNotSame(result1, result2);
-   }
-
-   @SuppressWarnings("unchecked")
-   public void testProcudesAnotherObjectInNewSessionEvenAfterDeserialization() throws Exception {
-      Supplier<Object> supplier = scope.apply(() -> new Object());
-      Object session1 = new Object();
-      Object session2 = new Object();
-
-      scope.open(session1);
-      Object result1 = supplier.get();
-      byte[] supplierBytes = serialize(supplier);
-      requestScope.open();
-      scope.open(session2);
-      Object result2 = deserialize(supplier.getClass(), supplierBytes).get();
 
       assertNotSame(result1, result2);
    }

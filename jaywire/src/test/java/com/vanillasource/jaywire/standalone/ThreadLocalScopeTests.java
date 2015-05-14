@@ -23,7 +23,6 @@ import static org.mockito.Mockito.*;
 import static org.testng.Assert.*;
 import com.vanillasource.jaywire.Factory;
 import java.util.function.Supplier;
-import static com.vanillasource.jaywire.SerializationUtils.*;
 
 @Test
 public class ThreadLocalScopeTests {
@@ -37,33 +36,12 @@ public class ThreadLocalScopeTests {
       assertNotSame(result1, result2);
    }
 
-   public void testProducesOneObjectPerThreadEvenAfterDeserialization() throws Exception {
-      ThreadLocalScope scope = new ThreadLocalScope();
-      Supplier<Object> objectSupplier = scope.apply(() -> new Object());
-
-      Object result1 = threadExecute(objectSupplier);
-      Object result2 = threadExecute(serializeThenDeserialize(objectSupplier));
-
-      assertNotSame(result1, result2);
-   }
-
    public void testReturnsSameObjectInSameThread() {
       ThreadLocalScope scope = new ThreadLocalScope();
       Factory<Object> objectSupplier = () -> new Object();
 
       Object result1 = scope.get(objectSupplier);
       Object result2 = scope.get(objectSupplier);
-
-      assertSame(result1, result2);
-   }
-
-   public void testReturnsSameObjectInSameThreadEvenAfterDeserialization() throws Exception {
-      ThreadLocalScope scope = new ThreadLocalScope();
-      Supplier<Object> objectSupplier = scope.apply( () -> new Object() );
-
-      Object result1 = objectSupplier.get();
-      Supplier<Object> deserializedObjectSupplier = serializeThenDeserialize(objectSupplier);
-      Object result2 = deserializedObjectSupplier.get();
 
       assertSame(result1, result2);
    }

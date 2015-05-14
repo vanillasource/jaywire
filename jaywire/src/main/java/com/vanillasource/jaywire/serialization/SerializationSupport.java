@@ -18,6 +18,7 @@
 
 package com.vanillasource.jaywire.serialization;
 
+import com.vanillasource.jaywire.Scope;
 import com.vanillasource.jaywire.Factory;
 import com.vanillasource.jaywire.Factory1;
 import com.vanillasource.jaywire.Factory2;
@@ -39,7 +40,17 @@ import com.vanillasource.function.Supplier7;
 import com.vanillasource.function.Supplier8;
 import com.vanillasource.function.Supplier9;
 
-public interface SerializableFactorySupport {
+/**
+ * Pull this interface in your module fragment if you want to
+ * emit serializable factories and suppliers.
+ */
+public interface SerializationSupport {
+   /**
+    * Create a wrapper scope that can emit serializable suppliers
+    * on apply.
+    */
+   Scope makeSupplierSerializable(Scope scope);
+
    <T> Supplier<T> makeSerializable(Factory<T> factory);
    <P1, T> Supplier1<P1, T> makeSerializable(Factory1<P1, T> factory);
    <P1, P2, T> Supplier2<P1, P2, T> makeSerializable(Factory2<P1, P2, T> factory);

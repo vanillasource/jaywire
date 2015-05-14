@@ -22,7 +22,6 @@ import org.testng.annotations.Test;
 import static org.mockito.Mockito.*;
 import static org.testng.Assert.*;
 import com.vanillasource.jaywire.Factory;
-import static com.vanillasource.jaywire.SerializationUtils.*;
 import java.util.function.Supplier;
 
 @Test
@@ -55,31 +54,6 @@ public class DelimitedRequestScopeTests {
       Object result1 = scope.get(objectSupplier);
       scope.open();
       Object result2 = scope.get(objectSupplier);
-
-      assertNotSame(result1, result2);
-   }
-
-   public void testProducesOneObjectPerRequestEvenAfterDeserialization() throws Exception {
-      DelimitedRequestScope scope = new DelimitedRequestScope(new SingletonScope());
-      Supplier<Object> objectSupplier = scope.apply(() -> new Object());
-
-      Object result1 = objectSupplier.get();
-      Supplier<Object> deserializedObjectSupplier = serializeThenDeserialize(objectSupplier);
-      Object result2 = deserializedObjectSupplier.get();
-
-      assertSame(result1, result2);
-   }
-
-   @SuppressWarnings("unchecked")
-   public void testProcudesAnotherObjectAfterOpenAndDeserialization() throws Exception {
-      DelimitedRequestScope scope = new DelimitedRequestScope(new SingletonScope());
-      Supplier<Object> objectSupplier = scope.apply(() -> new Object());
-
-      Object result1 = objectSupplier.get();
-      byte[] supplierBytes = serialize(objectSupplier);
-      scope.open();
-      Supplier<Object> deserializedObjectSupplier = deserialize(objectSupplier.getClass(), supplierBytes);
-      Object result2 = deserializedObjectSupplier.get();
 
       assertNotSame(result1, result2);
    }

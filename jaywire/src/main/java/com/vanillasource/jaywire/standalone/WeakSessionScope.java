@@ -20,7 +20,6 @@ package com.vanillasource.jaywire.standalone;
 
 import com.vanillasource.jaywire.Scope;
 import com.vanillasource.jaywire.Factory;
-import com.vanillasource.jaywire.serialization.SerializableSupplierScope;
 import java.util.Map;
 import java.util.WeakHashMap;
 
@@ -37,7 +36,7 @@ import java.util.WeakHashMap;
  * is created. It is expected that the container scope is request scope,
  * and after opening the request scope, the session is (re-)opened.
  */
-public class WeakSessionScope extends SerializableSupplierScope {
+public class WeakSessionScope implements Scope {
    private Map<Object, Scope> singletonScopes = new WeakHashMap<>();
    private Scope containerScope;
 

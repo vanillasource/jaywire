@@ -42,9 +42,24 @@ import com.vanillasource.function.Supplier9;
 import com.vanillasource.jaywire.Scope;
 
 
-public interface SerializableFactoryModule extends SingletonScopeSupport, SerializableFactorySupport {
+public interface SerializationModule extends SingletonScopeSupport, SerializationSupport {
    default DissociatingStorage getDissociatingStorage() {
       return singleton(() -> new DissociatingStorage());
+   }
+
+   @Override
+   default Scope makeSupplierSerializable(Scope scope) {
+      return new Scope() {
+         @Override
+         public <T> T get(Factory<T> factory) {
+            return scope.get(factory);
+         }
+
+         @Override
+         public <T> Supplier<T> apply(Factory<T> factory) {
+            return new SerializableSupplier<T>(getDissociatingStorage(), scope, factory);
+         }
+      };
    }
 
    @Override

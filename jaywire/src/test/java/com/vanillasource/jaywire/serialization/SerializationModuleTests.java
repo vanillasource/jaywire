@@ -27,7 +27,7 @@ import com.vanillasource.function.Supplier1;
 import java.io.NotSerializableException;
 
 @Test
-public class SerializableFactoryModuleTests {
+public class SerializationModuleTests {
    private ModuleImpl module;
 
    @Test(expectedExceptions = NotSerializableException.class)
@@ -44,7 +44,7 @@ public class SerializableFactoryModuleTests {
       module = new ModuleImpl();
    }
 
-   public static class ModuleImpl implements SerializableFactoryModule {
+   public static class ModuleImpl implements SerializationModule {
       private DissociatingStorage storage = new DissociatingStorage();
       @Override
       public Scope getSingletonScope() {

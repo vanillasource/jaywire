@@ -20,7 +20,6 @@ package com.vanillasource.jaywire.standalone;
 
 import com.vanillasource.jaywire.Scope;
 import com.vanillasource.jaywire.Factory;
-import com.vanillasource.jaywire.serialization.SerializableSupplierScope;
 
 /**
  * A request scope which has to be explicitly delimited.
@@ -28,7 +27,7 @@ import com.vanillasource.jaywire.serialization.SerializableSupplierScope;
  * that can guarantee that only one request is open
  * at any time.
  */
-public class DelimitedRequestScope extends SerializableSupplierScope {
+public class DelimitedRequestScope implements Scope {
    private Scope containerScope;
 
    public DelimitedRequestScope(Scope containerScope) {

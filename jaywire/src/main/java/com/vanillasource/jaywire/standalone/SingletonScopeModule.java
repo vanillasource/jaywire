@@ -20,14 +20,15 @@ package com.vanillasource.jaywire.standalone;
 
 import com.vanillasource.jaywire.SingletonScopeSupport;
 import com.vanillasource.jaywire.Scope;
+import com.vanillasource.jaywire.serialization.SerializationSupport;
 
 /**
  * A module implementation that provides a singleton scope which is
  * bound to the module instance. This means all singletons are actually
  * only singletons inside a module instance.
  */
-public abstract class SingletonScopeModule implements SingletonScopeSupport {
-   private SingletonScope singletonScope = new SingletonScope();
+public abstract class SingletonScopeModule implements SingletonScopeSupport, SerializationSupport {
+   private Scope singletonScope = makeSupplierSerializable(new SingletonScope());
 
    @Override
    public Scope getSingletonScope() {
