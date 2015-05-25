@@ -30,7 +30,7 @@ import spark.Spark;
  */
 public abstract class SparkModule extends StandaloneModule
       implements DelimitedRequestScopeModule, WeakSessionScopeModule {
-   public SparkModule() {
+   public void addRoutes() {
       Spark.before((request, response) -> {
          getDelimetedRequestScope().open();
          getWeakSessionScope().open(request.session(true).raw());
