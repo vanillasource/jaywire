@@ -1,4 +1,5 @@
-[![Build Status](https://img.shields.io/travis/vanillasource/jaywire.svg)](https://img.shields.io/travis/vanillasource/jaywire.svg)
+![Build Status](https://img.shields.io/travis/vanillasource/jaywire.svg)
+![Published Version](https://img.shields.io/maven-central/v/com.vanillasource.jaywire/jaywire-parent.svg)
 
 JayWire Dependency Injection
 ============================
