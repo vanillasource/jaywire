@@ -1,3 +1,5 @@
+[![Build Status](https://img.shields.io/travis/vanillasource/jaywire.svg)](https://img.shields.io/travis/vanillasource/jaywire.svg)
+
 JayWire Dependency Injection
 ============================
 
