@@ -19,24 +19,47 @@
 package com.vanillasource.jaywire.ee;
 
 import com.vanillasource.jaywire.standalone.StandaloneModule;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.PassivationCapable;
-import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.inject.spi.*;
 import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.Initialized;
+import javax.enterprise.context.Destroyed;
+import javax.annotation.PostConstruct;
+import javax.enterprise.event.Observes;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.function.Function;
 import java.lang.annotation.Annotation;
 
 public abstract class EnterpriseModule extends StandaloneModule {
+   private static EnterpriseModule enterpriseModule;
    private static long nextId = 1;
    private List<Bean<?>> exportedBeans = new LinkedList<>();
 
    List<Bean<?>> getBeans() {
       return exportedBeans;
+   }
+
+   @PostConstruct
+   private void registerEnterpriseModule() {
+      enterpriseModule = this;
+   }
+
+   private void init(@Observes @Initialized(ApplicationScoped.class) Object init) {
+   }
+
+   private void destroy(@Observes @Destroyed(ApplicationScoped.class) Object init) {
+   }
+
+   private EnterpriseModule getEnterpriseModule() {
+      if (enterpriseModule == null) {
+         throw new IllegalStateException("enterprise module is not yet registered");
+      }
+      return enterpriseModule;
    }
 
    /**
@@ -95,7 +118,7 @@ public abstract class EnterpriseModule extends StandaloneModule {
          return this;
       }
 
-      public void to(T bean) {
+      public <E extends EnterpriseModule> void to(Function<E, T> beanSupplier) {
          exportedBeans.add(new JaywireBean<T>() {
             @Override
             public String getId() {
@@ -123,8 +146,9 @@ public abstract class EnterpriseModule extends StandaloneModule {
             }
 
             @Override
+            @SuppressWarnings("unchecked")
             public T create(CreationalContext<T> creationalContext) {
-               return bean;
+               return beanSupplier.apply((E) getEnterpriseModule());
             }
 
             @Override
