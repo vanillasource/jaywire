@@ -19,6 +19,9 @@
 package com.vanillasource.jaywire.ee;
 
 import com.vanillasource.jaywire.standalone.StandaloneModule;
+import com.vanillasource.jaywire.SessionScopeSupport;
+import com.vanillasource.jaywire.RequestScopeSupport;
+import com.vanillasource.jaywire.Scope;
 import javax.enterprise.inject.spi.*;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.context.ApplicationScoped;
@@ -34,11 +37,24 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.function.Function;
 import java.lang.annotation.Annotation;
+import java.util.function.Supplier;
+import javax.inject.Inject;
 
-public abstract class EnterpriseModule extends StandaloneModule {
+/**
+ * Sublcass this module to integrate with Java Enteprise Edition 7, CDI 1.1. The subclass can be
+ * used exactly like any other Jaywire Module, declaring dependencies through normal methods. The subclass
+ * must be annotated with <code>ApplicationScoped</code> CDI context annotation.
+ */
+public abstract class EnterpriseModule extends StandaloneModule implements SessionScopeSupport, RequestScopeSupport {
    private static EnterpriseModule enterpriseModule;
    private static long nextId = 1;
    private List<Bean<?>> exportedBeans = new LinkedList<>();
+
+   @Inject
+   private CdiRequestScope requestScope;
+
+   @Inject
+   private CdiSessionScope sessionScope;
 
    List<Bean<?>> getBeans() {
       return exportedBeans;
@@ -52,7 +68,18 @@ public abstract class EnterpriseModule extends StandaloneModule {
    private void init(@Observes @Initialized(ApplicationScoped.class) Object init) {
    }
 
-   private void destroy(@Observes @Destroyed(ApplicationScoped.class) Object init) {
+   private void destroy(@Observes @Destroyed(ApplicationScoped.class) Object init) throws Exception {
+      close();
+   }
+
+   @Override
+   public Scope getSessionScope() {
+      return sessionScope;
+   }
+
+   @Override
+   public Scope getRequestScope() {
+      return requestScope;
    }
 
    private EnterpriseModule getEnterpriseModule() {
@@ -118,7 +145,12 @@ public abstract class EnterpriseModule extends StandaloneModule {
          return this;
       }
 
-      public <E extends EnterpriseModule> void to(Function<E, T> beanSupplier) {
+      @SuppressWarnings("unchecked")
+      public <E extends EnterpriseModule> void toObject(Function<E, T> beanSupplier) {
+         toSupplier(module -> () -> beanSupplier.apply((E)module));
+      }
+
+      public <E extends EnterpriseModule> void toSupplier(Function<E, Supplier<T>> beanSupplier) {
          exportedBeans.add(new JaywireBean<T>() {
             @Override
             public String getId() {
@@ -148,7 +180,7 @@ public abstract class EnterpriseModule extends StandaloneModule {
             @Override
             @SuppressWarnings("unchecked")
             public T create(CreationalContext<T> creationalContext) {
-               return beanSupplier.apply((E) getEnterpriseModule());
+               return beanSupplier.apply((E) getEnterpriseModule()).get();
             }
 
             @Override
