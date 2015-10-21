@@ -14,6 +14,7 @@
       <module>jaywire-spark</module>
       <module>jaywire-servlet</module>
       <module>jaywire-wicket</module>
+      <module>jaywire-ee</module>
    </modules>
 
    <properties>
