@@ -1,0 +1,51 @@
+/**
+ * Copyright (C) 2015 VanillaSource
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
+package com.vanillasource.jaywire.proxy;
+
+import org.testng.annotations.*;
+import static org.testng.Assert.*;
+import static org.mockito.Mockito.*;
+import java.util.function.Supplier;
+
+@Test
+public class ProxySupportTests implements ProxySupport {
+   private String value = "value";
+   private Supplier<String> supplier;
+
+   public void testReturnedProxyCallsSupplier() {
+      Proxy<String> proxy = proxy(supplier);
+
+      proxy.call(String::length);
+
+      verify(supplier).get();
+   }
+
+   public void testReturnValueOfCallIsReturnValueOfBody() {
+      Proxy<String> proxy = proxy(supplier);
+
+      assertEquals(proxy.call(String::length), Integer.valueOf(5));
+   }
+
+   @BeforeMethod
+   @SuppressWarnings("unchecked")
+   protected void setUp() {
+      supplier = mock(Supplier.class);
+      when(supplier.get()).thenReturn(value);
+   }
+}
