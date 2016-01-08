@@ -32,5 +32,20 @@ public interface ProxySupport {
    default <T> Proxy<T> proxy(Supplier<T> supplier) {
       return new SupplierProxy<>(supplier);
    }
+
+   /**
+    * Create a proxy which closes the resource after usage.
+    */
+   default <T extends AutoCloseable> Proxy<T> autoCloseProxy(Supplier<T> supplier) {
+      return proxy(supplier).onAfter(object -> {
+         try {
+            object.close();
+         } catch (RuntimeException e) {
+            throw e;
+         } catch (Exception e) {
+            throw new RuntimeException("could not auto-close object after usage: "+object, e);
+         }
+      });
+   }
 }
 
