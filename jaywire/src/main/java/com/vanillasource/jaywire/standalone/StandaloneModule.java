@@ -29,6 +29,6 @@ import com.vanillasource.jaywire.proxy.ProxySupport;
 public abstract class StandaloneModule 
    extends SingletonScopeModule 
    implements ThreadLocalScopeModule, CloseableModule, 
-              SerializationModule, ProxySupport {
+              SerializationModule {
 }
 
