@@ -19,6 +19,7 @@
 package com.vanillasource.jaywire.proxy;
 
 import java.util.function.Function;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.List;
 import java.util.ArrayList;
@@ -42,21 +43,23 @@ public interface Proxy<T> {
     * @return A proxy that will execute the supplied 'around'
     * handler.
     */
-   default Proxy<T> onAround(Consumer<Runnable> around) {
+   default Proxy<T> onAround(BiConsumer<T, Runnable> around) {
       return new Proxy<T>() {
          @Override
          public <R> R call(Function<T, R> body) {
-            List<R> result = new ArrayList<>(1);
-            around.accept(new Runnable() {
-               @Override
-               public void run() {
-                  result.add(call(body));
+            return Proxy.this.call(object -> {
+               List<R> result = new ArrayList<>(1);
+               around.accept(object, new Runnable() {
+                  @Override
+                  public void run() {
+                     result.add(body.apply(object));
+                  }
+               });
+               if (result.isEmpty()) {
+                  return null;
                }
+               return result.get(0);
             });
-            if (result.isEmpty()) {
-               return null;
-            }
-            return result.get(0);
          }
       };
    }
@@ -64,21 +67,37 @@ public interface Proxy<T> {
    /**
     * Execute a certain logic before the user supplied body is run.
     */
-   default Proxy<T> onBefore(Runnable before) {
-      return onAround(body -> {
-         before.run();
+   default Proxy<T> onBefore(Consumer<T> before) {
+      return onAround((object, body) -> {
+         before.accept(object);
          body.run();
       });
    }
 
    /**
+    * Execute a certain logic before the user supplied body is run,
+    * that does not need the proxied object.
+    */
+   default Proxy<T> onBefore(Runnable before) {
+      return onBefore(object -> before.run());
+   }
+
+   /**
     * Execute a certain logic after the user supplied body is run.
     */
-   default Proxy<T> onAfter(Runnable after) {
-      return onAround(body -> {
+   default Proxy<T> onAfter(Consumer<T> after) {
+      return onAround((object, body) -> {
          body.run();
-         after.run();
+         after.accept(object);
       });
+   }
+
+   /**
+    * Execute a certain logic after the user supplied body is run,
+    * that does not need the proxied object.
+    */
+   default Proxy<T> onAfter(Runnable after) {
+      return onAfter(object -> after.run());
    }
 }
 
