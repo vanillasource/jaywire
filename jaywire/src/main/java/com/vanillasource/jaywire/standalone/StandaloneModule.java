@@ -18,7 +18,6 @@
 
 package com.vanillasource.jaywire.standalone;
 
-import com.vanillasource.jaywire.serialization.SerializationModule;
 import com.vanillasource.jaywire.proxy.ProxySupport;
 
 /**
@@ -28,7 +27,6 @@ import com.vanillasource.jaywire.proxy.ProxySupport;
  */
 public abstract class StandaloneModule 
    extends SingletonScopeModule 
-   implements ThreadLocalScopeModule, CloseableModule, 
-              SerializationModule {
+   implements ThreadLocalScopeModule, CloseableModule {
 }
 

@@ -21,16 +21,15 @@ package com.vanillasource.jaywire.standalone;
 import com.vanillasource.jaywire.Scope;
 import com.vanillasource.jaywire.SingletonScopeSupport;
 import com.vanillasource.jaywire.ThreadLocalScopeSupport;
-import com.vanillasource.jaywire.serialization.SerializationSupport;
 
 /**
  * Module implementation that provides a thread local scope with
  * the help of singleton scope.
  */
-public interface ThreadLocalScopeModule extends SingletonScopeSupport, ThreadLocalScopeSupport, SerializationSupport {
+public interface ThreadLocalScopeModule extends SingletonScopeSupport, ThreadLocalScopeSupport {
    @Override
    default Scope getThreadLocalScope() {
-      return singleton(() -> makeSupplierSerializable(new ThreadLocalScope()));
+      return singleton(() -> new ThreadLocalScope());
    }
 }
 

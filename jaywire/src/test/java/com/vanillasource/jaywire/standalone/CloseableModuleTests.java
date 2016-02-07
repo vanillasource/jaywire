@@ -22,7 +22,6 @@ import org.testng.annotations.Test;
 import static org.mockito.Mockito.*;
 import static org.testng.Assert.*;
 import java.util.function.Supplier;
-import com.vanillasource.jaywire.serialization.SerializationModule;
 
 @Test
 public class CloseableModuleTests {
@@ -80,7 +79,7 @@ public class CloseableModuleTests {
    }
 
    private static class TestModule extends SingletonScopeModule
-         implements CloseableModule, SerializationModule {
+         implements CloseableModule {
    }
 }
 

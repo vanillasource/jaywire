@@ -22,7 +22,6 @@ import com.vanillasource.jaywire.RequestScopeSupport;
 import com.vanillasource.jaywire.SingletonScopeSupport;
 import com.vanillasource.jaywire.SessionScopeSupport;
 import com.vanillasource.jaywire.Scope;
-import com.vanillasource.jaywire.serialization.SerializationSupport;
 
 /**
  * A module implementation that provides a session scope based on
@@ -30,7 +29,7 @@ import com.vanillasource.jaywire.serialization.SerializationSupport;
  * the session is opened.
  */
 public interface WeakSessionScopeModule
-   extends SingletonScopeSupport, RequestScopeSupport, SessionScopeSupport, SerializationSupport {
+   extends SingletonScopeSupport, RequestScopeSupport, SessionScopeSupport {
 
    default WeakSessionScope getWeakSessionScope() {
       return singleton(() -> new WeakSessionScope(getRequestScope()));
@@ -38,7 +37,7 @@ public interface WeakSessionScopeModule
 
    @Override
    default Scope getSessionScope() {
-      return singleton(() -> makeSupplierSerializable(getWeakSessionScope()));
+      return singleton(() -> getWeakSessionScope());
    }
 }
 

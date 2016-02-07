@@ -22,7 +22,6 @@ import com.vanillasource.jaywire.RequestScopeSupport;
 import com.vanillasource.jaywire.SingletonScopeSupport;
 import com.vanillasource.jaywire.ThreadLocalScopeSupport;
 import com.vanillasource.jaywire.Scope;
-import com.vanillasource.jaywire.serialization.SerializationSupport;
 
 /**
  * A module implementation that provides a request scope based on
@@ -31,7 +30,7 @@ import com.vanillasource.jaywire.serialization.SerializationSupport;
  * requests at the same time.
  */
 public interface DelimitedRequestScopeModule 
-   extends SingletonScopeSupport, RequestScopeSupport, ThreadLocalScopeSupport, SerializationSupport {
+   extends SingletonScopeSupport, RequestScopeSupport, ThreadLocalScopeSupport {
 
    default DelimitedRequestScope getDelimetedRequestScope() {
       return singleton(() -> new DelimitedRequestScope(getThreadLocalScope()));
@@ -39,7 +38,7 @@ public interface DelimitedRequestScopeModule
 
    @Override
    default Scope getRequestScope() {
-      return singleton(() -> makeSupplierSerializable(getDelimetedRequestScope()));
+      return singleton(() -> getDelimetedRequestScope());
    }
 }
 
