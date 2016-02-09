@@ -22,7 +22,6 @@ package com.vanillasource.jaywire;
  * Add support for all standard scopes.
  */
 public interface StandardScopesSupport extends
-   SingletonScopeSupport, ThreadLocalScopeSupport, RequestScopeSupport,
-   SessionScopeSupport {
+   SingletonScopeSupport, ThreadLocalScopeSupport {
 }
 

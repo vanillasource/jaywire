@@ -18,15 +18,49 @@
 
 package com.vanillasource.jaywire.standalone;
 
-import com.vanillasource.jaywire.proxy.ProxySupport;
+import com.vanillasource.jaywire.Scope;
+import com.vanillasource.jaywire.StandardScopesSupport;
+import java.io.ObjectOutput;
+import java.io.ObjectInput;
+import java.io.Externalizable;
+import java.io.IOException;
 
 /**
  * A module that combines all available functionality from
- * the standalone modules. Extend this class on the top of your
+ * the standalone scopes. Extend this class on the top of your
  * module hierarchy to pull all standalone scope implementations.
  */
-public abstract class StandaloneModule 
-   extends SingletonScopeModule 
-   implements ThreadLocalScopeModule, CloseableModule {
+public abstract class StandaloneModule implements CloseableModule, StandardScopesSupport, Externalizable {
+   private final Scope singletonScope;
+   private final Scope threadLocalScope;
+
+   public StandaloneModule() {
+      singletonScope = new SingletonScope(this::getSingletonScope);
+      threadLocalScope = new ThreadLocalScope(this::getThreadLocalScope);
+   }
+
+   @Override
+   public Scope getSingletonScope() {
+      return singletonScope;
+   }
+
+   @Override
+   public Scope getThreadLocalScope() {
+      return threadLocalScope;
+   }
+
+   @Override
+   public final void readExternal(ObjectInput in) throws IOException {
+      // Do not read anything
+   }
+
+   @Override
+   public final void writeExternal(ObjectOutput out) throws IOException {
+      // Do not write anything
+   }
+
+   private final Object readResolve() {
+      return null; // TODO: return some static instance
+   }
 }
 

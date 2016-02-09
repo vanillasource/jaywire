@@ -16,35 +16,35 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package com.vanillasource.jaywire;
+package com.vanillasource.jaywire.standalone;
 
+import org.testng.annotations.Test;
+import org.testng.annotations.BeforeMethod;
 import static org.testng.Assert.*;
+import static com.vanillasource.jaywire.SerializationUtils.*;
 import java.util.function.Supplier;
-import java.lang.ref.WeakReference;
-import java.lang.ref.ReferenceQueue;
 
-public class GarbageUtils {
-   private static final long WAIT_MILLIS = 1000;
+@Test
+public class StandaloneModuleTests {
 
-   private GarbageUtils() {
+   public void testSingletonSupplierSerializable() throws Exception {
+      TestModule module = new TestModule();
+
+      serializeThenDeserialize(module.getSingletonObject());
    }
 
-   public static void waitObjectCollected(Supplier<Object> supplier) {
-      if (!isObjectCollected(supplier)) {
-         fail("object was not garbage collected");
-      }
+   public void testThreadLocalSupplierSerializable() throws Exception {
+      TestModule module = new TestModule();
+
+      serializeThenDeserialize(module.getThreadLocalObject());
    }
 
-   public static boolean isObjectCollected(Supplier<Object> supplier) {
-      ReferenceQueue<Object> referenceQueue = new ReferenceQueue<Object>();
-      WeakReference<Object> reference = new WeakReference<Object>(supplier.get(), referenceQueue);
-      System.gc();
-      try {
-         return referenceQueue.remove(WAIT_MILLIS) != null;
-      } catch (InterruptedException e) {
-         fail("waiting for object to be garbage collected was interrupted", e);
-         return false;
-      }
+   public void testAdditionalAttributesAreNotSerialized() throws Exception {
+      AdditionalAttributeTestModule module = new AdditionalAttributeTestModule();
+
+      serializeThenDeserialize(module.getSingletonObject());
    }
+
 }
+
 

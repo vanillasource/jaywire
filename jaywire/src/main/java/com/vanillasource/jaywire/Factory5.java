@@ -26,6 +26,6 @@ import java.io.Serializable;
  * <i>kind</i>. 
  */
 @FunctionalInterface
-public interface Factory5<P1, P2, P3, P4, P5, T> extends Supplier5<P1, P2, P3, P4, P5, T>, Kinded {
+public interface Factory5<P1, P2, P3, P4, P5, T> extends Supplier5<P1, P2, P3, P4, P5, T>, Kinded, Serializable {
 }
 

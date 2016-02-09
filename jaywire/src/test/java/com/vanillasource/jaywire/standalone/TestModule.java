@@ -16,16 +16,18 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package com.vanillasource.jaywire;
+package com.vanillasource.jaywire.standalone;
 
-import com.vanillasource.function.Supplier8;
-import java.io.Serializable;
+import java.util.function.Supplier;
 
-/**
- * Responsible for creating an object instance of a certain
- * <i>kind</i>. 
- */
-@FunctionalInterface
-public interface Factory8<P1, P2, P3, P4, P5, P6, P7, P8, T> extends Supplier8<P1, P2, P3, P4, P5, P6, P7, P8, T>, Kinded, Serializable {
+public class TestModule extends StandaloneModule {
+   public Supplier<Object> getSingletonObject() {
+      return getSingletonScope().apply( () -> new Object() );
+   }
+
+   public Supplier<Object> getThreadLocalObject() {
+      return threadLocal( () -> new Object() );
+   }
 }
+
 

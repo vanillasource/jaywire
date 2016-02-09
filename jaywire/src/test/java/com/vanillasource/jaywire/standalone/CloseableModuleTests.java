@@ -78,8 +78,7 @@ public class CloseableModuleTests {
 
    }
 
-   private static class TestModule extends SingletonScopeModule
-         implements CloseableModule {
+   private static class TestModule extends StandaloneModule {
    }
 }
 
