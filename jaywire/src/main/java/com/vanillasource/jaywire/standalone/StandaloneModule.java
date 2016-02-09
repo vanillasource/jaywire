@@ -24,6 +24,8 @@ import java.io.ObjectOutput;
 import java.io.ObjectInput;
 import java.io.Externalizable;
 import java.io.IOException;
+import java.io.ObjectStreamException;
+import static com.vanillasource.jaywire.util.SerializationUtil.*;
 
 /**
  * A module that combines all available functionality from
@@ -31,12 +33,24 @@ import java.io.IOException;
  * module hierarchy to pull all standalone scope implementations.
  */
 public abstract class StandaloneModule implements CloseableModule, StandardScopesSupport, Externalizable {
+   private static Object INSTANCE_MUTEX = new Object();
+   protected static StandaloneModule INSTANCE = null;
+   protected static boolean INSTANCE_AMBIGOUS = false;
    private final Scope singletonScope;
    private final Scope threadLocalScope;
 
    public StandaloneModule() {
       singletonScope = new SingletonScope(this::getSingletonScope);
       threadLocalScope = new ThreadLocalScope(this::getThreadLocalScope);
+      ifNotDeserializing( () -> {
+         synchronized (INSTANCE_MUTEX) {
+            if (INSTANCE == null) {
+               INSTANCE = this;
+            } else {
+               INSTANCE_AMBIGOUS = true;
+            }
+         }
+      });
    }
 
    @Override
@@ -59,8 +73,28 @@ public abstract class StandaloneModule implements CloseableModule, StandardScope
       // Do not write anything
    }
 
-   private final Object readResolve() {
-      return null; // TODO: return some static instance
+   /**
+    * Override this method to decide what static reference of a module should
+    * be used when deserializing suppliers. This default implementations works,
+    * if there is only one instance of a Module in the JVM, otherwise it will
+    * throw an exception.<br>
+    * <strong>Note:</strong> There are no instance variables available during the
+    * call to this method. It should rely purely on static information.
+    */
+   protected Object getStaticDeserializationModule() {
+      synchronized (INSTANCE_MUTEX) {
+         if (INSTANCE == null) {
+            throw new IllegalArgumentException("there was no instance of a StandaloneModule initialized yet, please override getStaticDeserializationModule() to provide one");
+         }
+         if (INSTANCE_AMBIGOUS) {
+            throw new IllegalArgumentException("there were multiple instances of StandaloneModule initialized, please override getStaticDeserializationModule() to disambiguate");
+         }
+         return INSTANCE;
+      }
+   }
+
+   protected final Object readResolve() throws ObjectStreamException {
+      return getStaticDeserializationModule();
    }
 }
 

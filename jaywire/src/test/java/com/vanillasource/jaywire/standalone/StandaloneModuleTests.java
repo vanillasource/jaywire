@@ -45,6 +45,43 @@ public class StandaloneModuleTests {
       serializeThenDeserialize(module.getSingletonObject());
    }
 
+   public void testSerializedSingletonDeserializesAsCounterpartyInOtherModule() throws Exception {
+      ParameterizedSingletonTestModule module1 = new ParameterizedSingletonTestModule("ModuleOne");
+      Supplier<ParameterizedSingletonTestModule.ParameterizedSingleton> singletonSupplier1 = module1.getSingletonObject();
+
+      ParameterizedSingletonTestModule module2 = new ParameterizedSingletonTestModule("ModuleTwo");
+      Supplier<ParameterizedSingletonTestModule.ParameterizedSingleton> singletonSupplier2 = serializeThenDeserialize(singletonSupplier1);
+
+      assertEquals(singletonSupplier2.get().getParameter(), "ModuleTwo");
+   }
+
+   public void testNonAmbigousModuleCanDeserializeSupplier() throws Exception {
+      AmbigousTestModule module = new AmbigousTestModule();
+
+      serializeThenDeserialize(module.getSingletonObject());
+   }
+
+   @Test(expectedExceptions = IllegalArgumentException.class)
+   public void testAmbigousModuleThrowsException() throws Exception {
+      AmbigousTestModule module1 = new AmbigousTestModule();
+      AmbigousTestModule module2 = new AmbigousTestModule();
+
+      serializeThenDeserialize(module1.getSingletonObject());
+   }
+
+   @Test(expectedExceptions = IllegalArgumentException.class)
+   public void testNonExistentModuleWillThrowException() throws Exception {
+      AmbigousTestModule module = new AmbigousTestModule();
+      StandaloneModule.INSTANCE = null;
+
+      serializeThenDeserialize(module.getSingletonObject());
+   }
+
+   @BeforeMethod
+   protected void setUp() {
+      StandaloneModule.INSTANCE = null;
+      StandaloneModule.INSTANCE_AMBIGOUS = false;
+   }
 }
 
 

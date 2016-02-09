@@ -20,9 +20,7 @@ package com.vanillasource.jaywire.standalone;
 
 import java.util.function.Supplier;
 
-public class AdditionalAttributeTestModule extends LastModuleDeserializerModule {
-   private Object nonserializableObject = new Object();
-
+public class AmbigousTestModule extends StandaloneModule {
    public Supplier<Object> getSingletonObject() {
       return getSingletonScope().apply( () -> new Object() );
    }

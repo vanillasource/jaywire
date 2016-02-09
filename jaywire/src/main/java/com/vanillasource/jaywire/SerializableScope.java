@@ -22,6 +22,7 @@ import java.util.function.Supplier;
 import java.io.Serializable;
 import java.io.ObjectInputStream;
 import java.io.IOException;
+import static com.vanillasource.jaywire.util.SerializationUtil.*;
 
 /**
  * A scope that does not refer to itself directly when serialized, so
@@ -63,7 +64,7 @@ public abstract class SerializableScope implements Scope {
       }
 
       private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-         in.defaultReadObject();
+         deserializing(() -> in.defaultReadObject());
          scope = indirectScopeSupplier.get();
       }
    }

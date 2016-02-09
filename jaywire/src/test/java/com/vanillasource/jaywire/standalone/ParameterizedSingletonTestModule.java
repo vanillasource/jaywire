@@ -20,11 +20,30 @@ package com.vanillasource.jaywire.standalone;
 
 import java.util.function.Supplier;
 
-public class AdditionalAttributeTestModule extends LastModuleDeserializerModule {
-   private Object nonserializableObject = new Object();
+public class ParameterizedSingletonTestModule extends LastModuleDeserializerModule {
+   private String parameter;
 
-   public Supplier<Object> getSingletonObject() {
-      return getSingletonScope().apply( () -> new Object() );
+   public ParameterizedSingletonTestModule() {
+   }
+
+   public ParameterizedSingletonTestModule(String parameter) {
+      this.parameter = parameter;
+   }
+
+   public Supplier<ParameterizedSingleton> getSingletonObject() {
+      return getSingletonScope().apply( () -> new ParameterizedSingleton(parameter) );
+   }
+
+   public static class ParameterizedSingleton {
+      private String parameter;
+
+      public ParameterizedSingleton(String parameter) {
+         this.parameter = parameter;
+      }
+
+      public String getParameter() {
+         return parameter;
+      }
    }
 }
 

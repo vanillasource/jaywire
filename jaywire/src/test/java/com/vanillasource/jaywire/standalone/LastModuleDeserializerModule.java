@@ -18,14 +18,20 @@
 
 package com.vanillasource.jaywire.standalone;
 
-import java.util.function.Supplier;
+import static com.vanillasource.jaywire.util.SerializationUtil.*;
 
-public class AdditionalAttributeTestModule extends LastModuleDeserializerModule {
-   private Object nonserializableObject = new Object();
+public class LastModuleDeserializerModule extends StandaloneModule {
+   private static Object INSTANCE;
 
-   public Supplier<Object> getSingletonObject() {
-      return getSingletonScope().apply( () -> new Object() );
+   public LastModuleDeserializerModule() {
+      ifNotDeserializing(() -> { INSTANCE = this; });
+   }
+
+   @Override
+   protected Object getStaticDeserializationModule() {
+      return INSTANCE;
    }
 }
+
 
 

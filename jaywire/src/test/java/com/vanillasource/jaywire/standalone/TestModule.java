@@ -20,7 +20,7 @@ package com.vanillasource.jaywire.standalone;
 
 import java.util.function.Supplier;
 
-public class TestModule extends StandaloneModule {
+public class TestModule extends LastModuleDeserializerModule {
    public Supplier<Object> getSingletonObject() {
       return getSingletonScope().apply( () -> new Object() );
    }
