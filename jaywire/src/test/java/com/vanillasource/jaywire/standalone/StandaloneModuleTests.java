@@ -22,6 +22,7 @@ import org.testng.annotations.Test;
 import org.testng.annotations.BeforeMethod;
 import static org.testng.Assert.*;
 import static com.vanillasource.jaywire.standalone.SerializationUtils.*;
+import static org.mockito.Mockito.*;
 import java.util.function.Supplier;
 
 @Test
@@ -75,6 +76,59 @@ public class StandaloneModuleTests {
       StandaloneModule.INSTANCE = null;
 
       serializeThenDeserialize(module.getSingletonObject());
+   }
+
+   public void testRegisteredCloseableGetsClosed() throws Exception {
+      AutoCloseable closeable = mock(AutoCloseable.class);
+
+      try (TestModule module = new TestModule()) {
+         module.closeWithModule(closeable);
+      }
+
+      verify(closeable).close();
+   }
+
+   public void testAllRegisteredCloseablesGetClosed() throws Exception {
+      AutoCloseable closeable1 = mock(AutoCloseable.class);
+      AutoCloseable closeable2 = mock(AutoCloseable.class);
+
+      try (TestModule module = new TestModule()) {
+         module.closeWithModule(closeable1);
+         module.closeWithModule(closeable2);
+      }
+
+      verify(closeable1).close();
+      verify(closeable2).close();
+   }
+
+   public void testAllRegisteredCloseablesGetClosedEvenIfTheyThrowExceptionsOnClose() throws Exception {
+      AutoCloseable closeable1 = mock(AutoCloseable.class);
+      doThrow(new Exception("fail")).when(closeable1).close();
+      AutoCloseable closeable2 = mock(AutoCloseable.class);
+      doThrow(new Exception("fail")).when(closeable2).close();
+
+      try {
+         try (TestModule module = new TestModule()) {
+            module.closeWithModule(closeable1);
+            module.closeWithModule(closeable2);
+         }
+      } catch (Exception e) {
+         // All ok
+      }
+
+      verify(closeable1).close();
+      verify(closeable2).close();
+   }
+
+   @Test(expectedExceptions = Exception.class)
+   public void testLastCloseExceptionGetsRethrown() throws Exception {
+      AutoCloseable closeable = mock(AutoCloseable.class);
+      doThrow(new Exception("fail")).when(closeable).close();
+
+      try (TestModule module = new TestModule()) {
+         module.closeWithModule(closeable);
+      }
+
    }
 
    @BeforeMethod

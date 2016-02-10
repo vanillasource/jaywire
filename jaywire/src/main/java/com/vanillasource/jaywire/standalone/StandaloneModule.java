@@ -19,12 +19,15 @@
 package com.vanillasource.jaywire.standalone;
 
 import com.vanillasource.jaywire.Scope;
+import com.vanillasource.jaywire.CloseableSupport;
 import com.vanillasource.jaywire.StandardScopesSupport;
 import java.io.ObjectOutput;
 import java.io.ObjectInput;
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectStreamException;
+import java.util.Collection;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import static com.vanillasource.jaywire.standalone.SerializationUtil.*;
 
 /**
@@ -32,7 +35,7 @@ import static com.vanillasource.jaywire.standalone.SerializationUtil.*;
  * the standalone scopes. Extend this class on the top of your
  * module hierarchy to pull all standalone scope implementations.
  */
-public abstract class StandaloneModule implements CloseableModule, StandardScopesSupport, Externalizable {
+public abstract class StandaloneModule implements StandardScopesSupport, CloseableSupport, Externalizable {
    private static Object INSTANCE_MUTEX = new Object();
    protected static StandaloneModule INSTANCE = null;
    protected static boolean INSTANCE_AMBIGOUS = false;
@@ -63,6 +66,33 @@ public abstract class StandaloneModule implements CloseableModule, StandardScope
       return threadLocalScope;
    }
 
+   private Collection<AutoCloseable> getCloseables() {
+      return singleton(() -> new ConcurrentLinkedDeque<AutoCloseable>());
+   }
+
+   @Override
+   public void closeWithModule(AutoCloseable closeable) {
+      getCloseables().add(closeable);
+   }
+
+   /**
+    * Tries to close all registered objects with catching exceptions. Only the
+    * last exception is re-thrown.
+    */
+   @Override
+   public void close() throws Exception {
+      Exception lastException = null;
+      for (AutoCloseable closeable : getCloseables()) {
+         try {
+            closeable.close();
+         } catch (Exception e) {
+            lastException = e;
+         }
+      }
+      if (lastException != null) {
+         throw lastException;
+      }
+   }
    @Override
    public final void readExternal(ObjectInput in) throws IOException {
       // Do not read anything

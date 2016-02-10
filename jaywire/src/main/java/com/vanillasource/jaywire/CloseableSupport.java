@@ -22,7 +22,7 @@ package com.vanillasource.jaywire;
  * Add support for closing auto-closeable objects when the
  * module is closed.
  */
-public interface CloseableSupport {
+public interface CloseableSupport extends AutoCloseable {
    /**
     * Applied directly to closeable objects will register
     * the object to be closed together with the module.
