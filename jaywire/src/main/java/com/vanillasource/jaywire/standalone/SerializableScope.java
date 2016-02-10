@@ -27,47 +27,57 @@ import com.vanillasource.jaywire.Scope;
 import com.vanillasource.jaywire.Factory;
 
 /**
- * A scope that does not refer to itself directly when serialized, so
- * it does not get pulled in with the supplier it returnes.
+ * A scope implementation that delegates to a given scope when directly asked for
+ * objects or suppliers. Additionally is generates serializable suppliers which
+ * can be sent across JVM boundaries, provided the same scopes/classes are present
+ * at the other JVM. Serialization works by serializing the factory given, with
+ * the supplier that can programmatically get the delegate scope if needed.
+ * The delegate scope does not have to be serializable for this to work.
  */
-public abstract class SerializableScope implements Scope {
-   private SerializableSupplier<Scope> indirectScopeSupplier;
+public class SerializableScope implements Scope {
+   private SerializableSupplier<Scope> indirectDelegateSupplier;
+   private Scope delegate;
 
-   public SerializableScope(SerializableSupplier<Scope> indirectScopeSupplier) {
-      this.indirectScopeSupplier = indirectScopeSupplier;
+   public SerializableScope(Scope delegate, SerializableSupplier<Scope> indirectDelegateSupplier) {
+      this.indirectDelegateSupplier = indirectDelegateSupplier;
+      this.delegate = delegate;
+   }
+
+   @Override
+   public <T> T get(Factory<T> factory) {
+      return delegate.get(factory);
    }
 
    /**
-    * Return a supplier that only indirectly refers to
-    * this scope.
+    * Return a supplier that only indirectly refers to the delegate scope.
     */
    @Override
    public <T> Supplier<T> apply(Factory<T> factory) {
-      return new IndirectSerializableSupplier<T>(this, indirectScopeSupplier, factory);
+      return new IndirectSerializableSupplier<T>(delegate, indirectDelegateSupplier, factory);
    }
 
    public interface SerializableSupplier<T> extends Supplier<T>, Serializable {
    }
 
    public static class IndirectSerializableSupplier<T> implements SerializableSupplier<T> {
-      private transient Scope scope;
+      private transient Scope delegate;
       private Factory<T> factory;
-      private SerializableSupplier<Scope> indirectScopeSupplier;
+      private SerializableSupplier<Scope> indirectDelegateSupplier;
 
-      public IndirectSerializableSupplier(Scope scope, SerializableSupplier<Scope> indirectScopeSupplier, Factory<T> factory) {
-         this.scope = scope;
+      public IndirectSerializableSupplier(Scope delegate, SerializableSupplier<Scope> indirectDelegateSupplier, Factory<T> factory) {
+         this.delegate = delegate;
          this.factory = factory;
-         this.indirectScopeSupplier = indirectScopeSupplier;
+         this.indirectDelegateSupplier = indirectDelegateSupplier;
       }
 
       @Override
       public T get() {
-         return scope.get(factory);
+         return delegate.get(factory);
       }
 
       private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
          deserializing(() -> in.defaultReadObject());
-         scope = indirectScopeSupplier.get();
+         delegate = indirectDelegateSupplier.get();
       }
    }
 }

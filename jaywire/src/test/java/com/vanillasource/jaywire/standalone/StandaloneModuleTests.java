@@ -34,12 +34,6 @@ public class StandaloneModuleTests {
       serializeThenDeserialize(module.getSingletonObject());
    }
 
-   public void testThreadLocalSupplierSerializable() throws Exception {
-      TestModule module = new TestModule();
-
-      serializeThenDeserialize(module.getThreadLocalObject());
-   }
-
    public void testAdditionalAttributesAreNotSerialized() throws Exception {
       AdditionalAttributeTestModule module = new AdditionalAttributeTestModule();
 
@@ -73,7 +67,7 @@ public class StandaloneModuleTests {
    @Test(expectedExceptions = IllegalArgumentException.class)
    public void testNonExistentModuleWillThrowException() throws Exception {
       AmbigousTestModule module = new AmbigousTestModule();
-      StandaloneModule.INSTANCE = null;
+      StandaloneModule.DESERIALIZATION_INSTANCE = null;
 
       serializeThenDeserialize(module.getSingletonObject());
    }
@@ -133,8 +127,8 @@ public class StandaloneModuleTests {
 
    @BeforeMethod
    protected void setUp() {
-      StandaloneModule.INSTANCE = null;
-      StandaloneModule.INSTANCE_AMBIGOUS = false;
+      StandaloneModule.DESERIALIZATION_INSTANCE = null;
+      StandaloneModule.DESERIALIZATION_INSTANCE_AMBIGOUS = false;
    }
 }
 

@@ -36,21 +36,21 @@ import static com.vanillasource.jaywire.standalone.SerializationUtil.*;
  * module hierarchy to pull all standalone scope implementations.
  */
 public abstract class StandaloneModule implements StandardScopesSupport, CloseableSupport, Externalizable {
-   private static Object INSTANCE_MUTEX = new Object();
-   protected static StandaloneModule INSTANCE = null;
-   protected static boolean INSTANCE_AMBIGOUS = false;
+   private static Object DESERIALIZATION_INSTANCE_MUTEX = new Object();
+   protected static StandaloneModule DESERIALIZATION_INSTANCE = null;
+   protected static boolean DESERIALIZATION_INSTANCE_AMBIGOUS = false;
    private final Scope singletonScope;
    private final Scope threadLocalScope;
 
    public StandaloneModule() {
-      singletonScope = new SingletonScope(this::getSingletonScope);
-      threadLocalScope = new ThreadLocalScope(this::getThreadLocalScope);
+      singletonScope = new SerializableScope(new SingletonScope(), this::getSingletonScope);
+      threadLocalScope = new ThreadLocalScope();
       ifNotDeserializing( () -> {
-         synchronized (INSTANCE_MUTEX) {
-            if (INSTANCE == null) {
-               INSTANCE = this;
+         synchronized (DESERIALIZATION_INSTANCE_MUTEX) {
+            if (DESERIALIZATION_INSTANCE == null) {
+               DESERIALIZATION_INSTANCE = this;
             } else {
-               INSTANCE_AMBIGOUS = true;
+               DESERIALIZATION_INSTANCE_AMBIGOUS = true;
             }
          }
       });
@@ -93,6 +93,7 @@ public abstract class StandaloneModule implements StandardScopesSupport, Closeab
          throw lastException;
       }
    }
+
    @Override
    public final void readExternal(ObjectInput in) throws IOException {
       // Do not read anything
@@ -112,14 +113,14 @@ public abstract class StandaloneModule implements StandardScopesSupport, Closeab
     * call to this method. It should rely purely on static information.
     */
    protected Object getStaticDeserializationModule() {
-      synchronized (INSTANCE_MUTEX) {
-         if (INSTANCE == null) {
+      synchronized (DESERIALIZATION_INSTANCE_MUTEX) {
+         if (DESERIALIZATION_INSTANCE == null) {
             throw new IllegalArgumentException("there was no instance of a StandaloneModule initialized yet, please override getStaticDeserializationModule() to provide one");
          }
-         if (INSTANCE_AMBIGOUS) {
+         if (DESERIALIZATION_INSTANCE_AMBIGOUS) {
             throw new IllegalArgumentException("there were multiple instances of StandaloneModule initialized, please override getStaticDeserializationModule() to disambiguate");
          }
-         return INSTANCE;
+         return DESERIALIZATION_INSTANCE;
       }
    }
 

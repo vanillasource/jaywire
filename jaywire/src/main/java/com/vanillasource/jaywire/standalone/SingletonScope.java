@@ -30,12 +30,8 @@ import java.util.HashMap;
  * and reentrant, which means during an initialization of a
  * single object other may also initialize as singleton scope.
  */
-public class SingletonScope extends SerializableScope {
+public class SingletonScope implements Scope {
    private Map<Object, Object> instances = new HashMap<>();
-
-   public SingletonScope(SerializableSupplier<Scope> indirectScopeSupplier) {
-      super(indirectScopeSupplier);
-   }
 
    @Override
    @SuppressWarnings("unchecked")

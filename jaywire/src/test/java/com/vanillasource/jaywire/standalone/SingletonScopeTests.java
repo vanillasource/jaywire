@@ -28,7 +28,7 @@ public class SingletonScopeTests {
 
    @SuppressWarnings("unchecked")
    public void testSupplierUsedOnlyOnce() {
-      SingletonScope scope = new SingletonScope(null);
+      SingletonScope scope = new SingletonScope();
       Factory<Object> supplier = () -> new Object();
 
       Object result1 = scope.get(supplier);

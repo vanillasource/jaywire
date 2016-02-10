@@ -27,7 +27,7 @@ import java.util.function.Supplier;
 @Test
 public class ThreadLocalScopeTests {
    public void testProducesOneObjectPerThread() throws InterruptedException {
-      ThreadLocalScope scope = new ThreadLocalScope(null);
+      ThreadLocalScope scope = new ThreadLocalScope();
       Supplier<Object> objectSupplier = scope.apply(() -> new Object());
 
       Object result1 = threadExecute(objectSupplier);
@@ -37,7 +37,7 @@ public class ThreadLocalScopeTests {
    }
 
    public void testReturnsSameObjectInSameThread() {
-      ThreadLocalScope scope = new ThreadLocalScope(null);
+      ThreadLocalScope scope = new ThreadLocalScope();
       Factory<Object> objectSupplier = () -> new Object();
 
       Object result1 = scope.get(objectSupplier);

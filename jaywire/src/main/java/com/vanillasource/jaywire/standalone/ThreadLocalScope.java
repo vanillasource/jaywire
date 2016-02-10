@@ -25,13 +25,9 @@ import com.vanillasource.jaywire.Scope;
  * An implementation of a thread local scope that is basically
  * a singleton scope in a thread local variable. Scope is thread-safe.
  */
-public class ThreadLocalScope extends SerializableScope {
-   private final ThreadLocal<SingletonScope> threadLocalSingletons;
-
-   public ThreadLocalScope(SerializableSupplier<Scope> indirectScopeSupplier) {
-      super(indirectScopeSupplier);
-      threadLocalSingletons = ThreadLocal.withInitial(() -> new SingletonScope(indirectScopeSupplier));
-   }
+public class ThreadLocalScope implements Scope {
+   private final ThreadLocal<SingletonScope> threadLocalSingletons =
+      ThreadLocal.withInitial(() -> new SingletonScope());
 
    @Override
    public <T> T get(Factory<T> factory) {
