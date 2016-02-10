@@ -16,28 +16,30 @@
   * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
   */
 
-package com.vanillasource.jaywire;
+package com.vanillasource.jaywire.web;
 
 import java.util.function.Supplier;
+import com.vanillasource.jaywire.Scope;
+import com.vanillasource.jaywire.Factory;
 
 /**
  * Pull this interface into a Module to define a dependency to a
- * session scope.
+ * request scope.
  */
-public interface SessionScopeSupport {
+public interface RequestScopeSupport {
    /**
     * Returns a scope that will instantiate objects only once
-    * for one session. Semantics are defined in detail by
+    * for one call/request. Semantics are defined in detail by
     * implementation, mostly used in web context.
     */
-   Scope getSessionScope();
+   Scope getRequestScope();
 
    /**
-    * Convenience method to produce session scope suppliers easily. Equals
-    * <code>getSessionScope().apply(&lt;supplier&gt;)</code>.
+    * Convenience method to produce request scope suppliers easily. Equals
+    * <code>getRequestScope().apply(&lt;supplier&gt;)</code>.
     */
-   default <T> Supplier<T> sessionScope(Factory<T> supplier) {
-      return getSessionScope().apply(supplier);
+   default <T> Supplier<T> requestScope(Factory<T> supplier) {
+      return getRequestScope().apply(supplier);
    }
 }
 

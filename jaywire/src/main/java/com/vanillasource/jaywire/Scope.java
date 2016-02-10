@@ -26,6 +26,9 @@ import java.util.function.Supplier;
  * given factory.
  */
 public interface Scope {
+   /**
+    * Always uses the given factory, for each request.
+    */
    Scope FACTORY = new Scope() {
       @Override
       public <T> T get(Factory<T> factory) {
