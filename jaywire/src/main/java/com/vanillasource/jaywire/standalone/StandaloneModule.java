@@ -44,7 +44,7 @@ public abstract class StandaloneModule implements StandardScopesSupport, Closeab
 
    public StandaloneModule() {
       singletonScope = new SerializableScope(new SingletonScope(), this::getSingletonScope);
-      threadLocalScope = new ThreadLocalScope();
+      threadLocalScope = new SerializableScope(new ThreadLocalScope(), this::getThreadLocalScope);
       ifNotDeserializing( () -> {
          synchronized (DESERIALIZATION_INSTANCE_MUTEX) {
             if (DESERIALIZATION_INSTANCE == null) {
