@@ -19,8 +19,11 @@
 package com.vanillasource.jaywire.wicket;
 
 import com.vanillasource.jaywire.standalone.StandaloneModule;
-import com.vanillasource.jaywire.web.DelimitedRequestScopeModule;
-import com.vanillasource.jaywire.web.WeakSessionScopeModule;
+import com.vanillasource.jaywire.web.RequestScopeSupport;
+import com.vanillasource.jaywire.web.ServletRequestScope;
+import com.vanillasource.jaywire.web.HttpSessionScope;
+import com.vanillasource.jaywire.web.SessionScopeSupport;
+import com.vanillasource.jaywire.Scope;
 import org.apache.wicket.Application;
 import org.apache.wicket.Session;
 import org.apache.wicket.Page;
@@ -31,15 +34,31 @@ import org.apache.wicket.request.cycle.AbstractRequestCycleListener;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.WicketRuntimeException;
+import org.apache.wicket.protocol.http.servlet.ServletWebRequest;
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.function.Function;
 import java.util.Map;
 import java.util.HashMap;
 
 public abstract class WicketModule extends StandaloneModule
-      implements DelimitedRequestScopeModule, WeakSessionScopeModule {
+      implements RequestScopeSupport, SessionScopeSupport {
 
-   private Map<Class<?>, Function<PageParameters, ?>> pageFactories = new HashMap<>();
-   
+   private final HttpSessionScope sessionScope = new HttpSessionScope();
+   private final ServletRequestScope requestScope = new ServletRequestScope();
+   private final Map<Class<?>, Function<PageParameters, ?>> pageFactories = new HashMap<>();
+
+   @Override
+   public Scope getRequestScope() {
+      return requestScope;
+   }
+
+   @Override
+   public Scope getSessionScope() {
+      return sessionScope;
+   }
+
    /**
     * Call in the <code>init()</code> method of the
     * application to setup this module to work with
@@ -54,19 +73,25 @@ public abstract class WicketModule extends StandaloneModule
       application.getRequestCycleListeners().add(new AbstractRequestCycleListener() {
          @Override
          public void onBeginRequest(RequestCycle requestCycle) {
-            getDelimetedRequestScope().open();
-            // Force creation of session
-            application.getSessionStore().getSessionId(requestCycle.getRequest(), true);
-            Session session = application.fetchCreateAndSetSession(requestCycle);
-            if (session == null) {
-               throw new WicketRuntimeException("Could not create session, which is necessary for JayWire session scope.");
+            if (requestCycle.getRequest() != null && requestCycle.getRequest() instanceof ServletWebRequest) {
+               ServletRequest request = ((ServletWebRequest) requestCycle.getRequest()).getContainerRequest();
+               requestScope.setServletRequest(request);
+               // Force creation of session
+               if (request instanceof HttpServletRequest) {
+                  application.getSessionStore().getSessionId(requestCycle.getRequest(), true);
+                  Session session = application.fetchCreateAndSetSession(requestCycle);
+                  if (session == null) {
+                     throw new WicketRuntimeException("Could not create session, which is necessary for JayWire session scope.");
+                  }
+                  sessionScope.setHttpSession(((HttpServletRequest) request).getSession());
+               }
             }
-            getWeakSessionScope().open(session);
          }
 
          @Override
          public void onEndRequest(RequestCycle requestCycle) {
-            getDelimetedRequestScope().close();
+            sessionScope.clearHttpSession();
+            requestScope.clearServletRequest();
          }
       });
       application.getApplicationListeners().add(new IApplicationListener() {

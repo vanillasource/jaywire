@@ -16,32 +16,36 @@
   * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
   */
 
-package com.vanillasource.jaywire.standalone;
+package com.vanillasource.jaywire.web;
 
-import com.vanillasource.jaywire.Factory;
 import com.vanillasource.jaywire.Scope;
-import java.util.Map;
-import java.util.HashMap;
+import com.vanillasource.jaywire.Factory;
+import javax.servlet.http.HttpSession;
 
-/**
- * An implementation of a singleton scope that keeps all
- * already instantiated objects in an internal map indexed by
- * the <i>kind</i> object returned by the factory. This scope is thread-safe,
- * and reentrant, which means during an initialization of a
- * single object other may also initialize as singleton scope.
- */
-public class SingletonScope implements Scope {
-   private Map<String, Object> instances = new HashMap<>();
+public class HttpSessionScope implements Scope {
+   private ThreadLocal<HttpSession> sessionThreadLocal = new ThreadLocal<>();
 
    @Override
    @SuppressWarnings("unchecked")
-   public synchronized <T> T get(Factory<T> factory) {
-      T instance = (T) instances.get(factory.getKind());
-      if (instance == null) {
-         instance = factory.get();
-         instances.put(factory.getKind(), instance);
+   public <T> T get(Factory<T> factory) {
+      HttpSession session = sessionThreadLocal.get();
+      if (session == null) {
+         throw new IllegalStateException("there was no session trying to get session scoped object");
       }
-      return instance;
+      T object = (T) session.getAttribute(factory.getKind());
+      if (object == null) {
+         object = factory.get();
+         session.setAttribute(factory.getKind(), object);
+      }
+      return object;
+   }
+
+   public void setHttpSession(HttpSession session) {
+      sessionThreadLocal.set(session);
+   }
+
+   public void clearHttpSession() {
+      sessionThreadLocal.set(null);
    }
 }
 

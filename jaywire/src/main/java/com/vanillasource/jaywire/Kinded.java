@@ -25,12 +25,10 @@ package com.vanillasource.jaywire;
  */
 public interface Kinded {
    /**
-    * Returns an object representing the <i>kind</i>
-    * of object. This returned object should have its
-    * identity methods (<code>equals()</code> and <code>hashCode()</code>)
-    * implemented.
+    * Returns a string representing the <i>kind</i>
+    * of object.
     */
-   default Object getKind() {
+   default String getKind() {
       return getClass().getName();
    }
 }

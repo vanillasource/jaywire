@@ -18,9 +18,12 @@
 
 package com.vanillasource.jaywire.servlet;
 
+import com.vanillasource.jaywire.Scope;
 import com.vanillasource.jaywire.standalone.StandaloneModule;
-import com.vanillasource.jaywire.web.DelimitedRequestScopeModule;
-import com.vanillasource.jaywire.web.WeakSessionScopeModule;
+import com.vanillasource.jaywire.web.ServletRequestScope;
+import com.vanillasource.jaywire.web.HttpSessionScope;
+import com.vanillasource.jaywire.web.RequestScopeSupport;
+import com.vanillasource.jaywire.web.SessionScopeSupport;
 import javax.servlet.ServletContextListener;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContext;
@@ -48,8 +51,13 @@ import java.io.IOException;
  * Either annotate the class with <code>WebListener</code> or register it
  * in the <i>web.xml</i> as a listener.
  */
-public abstract class ServletModule extends StandaloneModule 
-      implements DelimitedRequestScopeModule, WeakSessionScopeModule, ServletContextListener {
+public abstract class ServletModule
+      extends StandaloneModule
+      implements RequestScopeSupport, SessionScopeSupport, ServletContextListener {
+
+   private final HttpSessionScope sessionScope = new HttpSessionScope();
+   private final ServletRequestScope requestScope = new ServletRequestScope();
+
    @Override
    public void contextInitialized(ServletContextEvent event) {
       ServletContext context = event.getServletContext();
@@ -57,17 +65,17 @@ public abstract class ServletModule extends StandaloneModule
       registerComponents(context);
    }
 
-   private void registerInfrastructure(ServletContext context) {
-      context.addListener(new HttpSessionListener() {
-         @Override
-         public void sessionCreated(HttpSessionEvent event) {
-         }
+   @Override
+   public Scope getSessionScope() {
+      return sessionScope;
+   }
 
-         @Override
-         public void sessionDestroyed(HttpSessionEvent event) {
-            getWeakSessionScope().close(event.getSession());
-         }
-      });
+   @Override
+   public Scope getRequestScope() {
+      return requestScope;
+   }
+
+   private void registerInfrastructure(ServletContext context) {
       context.addFilter("JayWireScopeFilter", new Filter() {
          @Override
          public void init(FilterConfig config) {
@@ -80,13 +88,17 @@ public abstract class ServletModule extends StandaloneModule
          @Override
          public void doFilter(ServletRequest request, 
                ServletResponse response, FilterChain chain) throws ServletException, IOException {
-            getDelimetedRequestScope().open();
+            requestScope.setServletRequest(request);
             if (request instanceof HttpServletRequest) {
                HttpServletRequest httpRequest = (HttpServletRequest) request;
-               getWeakSessionScope().open(httpRequest.getSession());
+               sessionScope.setHttpSession(httpRequest.getSession(true));
             }
-            chain.doFilter(request, response);
-            getDelimetedRequestScope().close();
+            try {
+               chain.doFilter(request, response);
+            } finally {
+               requestScope.clearServletRequest();
+               sessionScope.clearHttpSession();
+            }
          }
       }).addMappingForUrlPatterns(null, false, "/*");
       context.log("JayWire servlet module "+getClass().getName()+" activated");

@@ -19,8 +19,8 @@
 package com.vanillasource.jaywire.ee;
 
 import com.vanillasource.jaywire.standalone.StandaloneModule;
-import com.vanillasource.jaywire.SessionScopeSupport;
-import com.vanillasource.jaywire.RequestScopeSupport;
+import com.vanillasource.jaywire.web.SessionScopeSupport;
+import com.vanillasource.jaywire.web.RequestScopeSupport;
 import com.vanillasource.jaywire.Scope;
 import javax.enterprise.inject.spi.*;
 import javax.enterprise.context.spi.CreationalContext;

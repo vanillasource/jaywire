@@ -19,8 +19,11 @@
 package com.vanillasource.jaywire.spark;
 
 import com.vanillasource.jaywire.standalone.StandaloneModule;
-import com.vanillasource.jaywire.web.DelimitedRequestScopeModule;
-import com.vanillasource.jaywire.web.WeakSessionScopeModule;
+import com.vanillasource.jaywire.web.RequestScopeSupport;
+import com.vanillasource.jaywire.web.ServletRequestScope;
+import com.vanillasource.jaywire.web.SessionScopeSupport;
+import com.vanillasource.jaywire.web.HttpSessionScope;
+import com.vanillasource.jaywire.Scope;
 import spark.Spark;
 
 /**
@@ -29,14 +32,28 @@ import spark.Spark;
  * session scopes.
  */
 public abstract class SparkModule extends StandaloneModule
-      implements DelimitedRequestScopeModule, WeakSessionScopeModule {
+      implements RequestScopeSupport, SessionScopeSupport {
+   private final ServletRequestScope requestScope = new ServletRequestScope();
+   private final HttpSessionScope sessionScope = new HttpSessionScope();
+
+   @Override
+   public Scope getRequestScope() {
+      return requestScope;
+   }
+
+   @Override
+   public Scope getSessionScope() {
+      return sessionScope;
+   }
+
    public void addRoutes() {
       Spark.before((request, response) -> {
-         getDelimetedRequestScope().open();
-         getWeakSessionScope().open(request.session(true).raw());
+         requestScope.setServletRequest(request.raw());
+         sessionScope.setHttpSession(request.session(true).raw());
       });
       Spark.after((request, response) -> {
-         getDelimetedRequestScope().close();
+         requestScope.clearServletRequest();
+         sessionScope.clearHttpSession();
       });
    }
 }
