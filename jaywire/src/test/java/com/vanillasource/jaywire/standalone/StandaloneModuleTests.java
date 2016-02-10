@@ -21,7 +21,7 @@ package com.vanillasource.jaywire.standalone;
 import org.testng.annotations.Test;
 import org.testng.annotations.BeforeMethod;
 import static org.testng.Assert.*;
-import static com.vanillasource.jaywire.SerializationUtils.*;
+import static com.vanillasource.jaywire.standalone.SerializationUtils.*;
 import java.util.function.Supplier;
 
 @Test

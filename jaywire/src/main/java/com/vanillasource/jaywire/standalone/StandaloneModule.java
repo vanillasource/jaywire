@@ -25,7 +25,7 @@ import java.io.ObjectInput;
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectStreamException;
-import static com.vanillasource.jaywire.util.SerializationUtil.*;
+import static com.vanillasource.jaywire.standalone.SerializationUtil.*;
 
 /**
  * A module that combines all available functionality from

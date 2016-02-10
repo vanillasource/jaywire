@@ -19,7 +19,6 @@
 package com.vanillasource.jaywire.standalone;
 
 import com.vanillasource.jaywire.Factory;
-import com.vanillasource.jaywire.SerializableScope;
 import com.vanillasource.jaywire.Scope;
 import java.util.Map;
 import java.util.HashMap;

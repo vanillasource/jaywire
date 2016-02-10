@@ -16,13 +16,15 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package com.vanillasource.jaywire;
+package com.vanillasource.jaywire.standalone;
 
 import java.util.function.Supplier;
 import java.io.Serializable;
 import java.io.ObjectInputStream;
 import java.io.IOException;
-import static com.vanillasource.jaywire.util.SerializationUtil.*;
+import static com.vanillasource.jaywire.standalone.SerializationUtil.*;
+import com.vanillasource.jaywire.Scope;
+import com.vanillasource.jaywire.Factory;
 
 /**
  * A scope that does not refer to itself directly when serialized, so

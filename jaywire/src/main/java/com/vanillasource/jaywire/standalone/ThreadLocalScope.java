@@ -19,7 +19,6 @@
 package com.vanillasource.jaywire.standalone;
 
 import com.vanillasource.jaywire.Factory;
-import com.vanillasource.jaywire.SerializableScope;
 import com.vanillasource.jaywire.Scope;
 
 /**
