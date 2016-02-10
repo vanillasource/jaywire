@@ -76,21 +76,13 @@ public abstract class StandaloneModule implements StandardScopesSupport, Closeab
    }
 
    /**
-    * Tries to close all registered objects with catching exceptions. Only the
-    * last exception is re-thrown.
+    * Tries to close all registered objects, but will abort at the first
+    * failure with the exception thrown from closeable.
     */
    @Override
    public void close() throws Exception {
-      Exception lastException = null;
       for (AutoCloseable closeable : getCloseables()) {
-         try {
-            closeable.close();
-         } catch (Exception e) {
-            lastException = e;
-         }
-      }
-      if (lastException != null) {
-         throw lastException;
+         closeable.close();
       }
    }
 

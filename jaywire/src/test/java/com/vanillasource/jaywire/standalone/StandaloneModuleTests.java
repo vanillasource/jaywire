@@ -95,11 +95,10 @@ public class StandaloneModuleTests {
       verify(closeable2).close();
    }
 
-   public void testAllRegisteredCloseablesGetClosedEvenIfTheyThrowExceptionsOnClose() throws Exception {
+   public void testCloseAbortsOnFirstFailure() throws Exception {
       AutoCloseable closeable1 = mock(AutoCloseable.class);
       doThrow(new Exception("fail")).when(closeable1).close();
       AutoCloseable closeable2 = mock(AutoCloseable.class);
-      doThrow(new Exception("fail")).when(closeable2).close();
 
       try {
          try (TestModule module = new TestModule()) {
@@ -111,7 +110,7 @@ public class StandaloneModuleTests {
       }
 
       verify(closeable1).close();
-      verify(closeable2).close();
+      verify(closeable2, never()).close();
    }
 
    @Test(expectedExceptions = Exception.class)
