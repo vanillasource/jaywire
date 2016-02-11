@@ -16,14 +16,14 @@
   * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
   */
 
-package com.vanillasource.jaywire.standalone;
+package com.vanillasource.jaywire.serialization;
 
 import java.io.ObjectOutput;
 import java.io.ObjectInput;
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectStreamException;
-import static com.vanillasource.jaywire.standalone.SerializationUtil.*;
+import static com.vanillasource.jaywire.serialization.SerializationUtil.*;
 
 /**
  * A module superclass that supports serialization and deserialization, even
@@ -34,8 +34,8 @@ import static com.vanillasource.jaywire.standalone.SerializationUtil.*;
  */
 public abstract class SerializableModule implements Externalizable {
    private static Object DESERIALIZATION_INSTANCE_MUTEX = new Object();
-   protected static Object DESERIALIZATION_INSTANCE = null;
-   protected static boolean DESERIALIZATION_INSTANCE_AMBIGOUS = false;
+   private static Object DESERIALIZATION_INSTANCE = null;
+   private static boolean DESERIALIZATION_INSTANCE_AMBIGOUS = false;
 
    public SerializableModule() {
       ifNotDeserializing( () -> {
@@ -81,6 +81,11 @@ public abstract class SerializableModule implements Externalizable {
 
    protected final Object readResolve() throws ObjectStreamException {
       return getStaticDeserializationModule();
+   }
+
+   public static void clearStaticInstance() {
+      DESERIALIZATION_INSTANCE = null;
+      DESERIALIZATION_INSTANCE_AMBIGOUS = false;
    }
 }
 

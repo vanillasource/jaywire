@@ -23,6 +23,7 @@ import org.testng.annotations.BeforeMethod;
 import static org.testng.Assert.*;
 import static com.vanillasource.jaywire.standalone.SerializationUtils.*;
 import static org.mockito.Mockito.*;
+import com.vanillasource.jaywire.serialization.SerializableModule;
 import java.util.function.Supplier;
 
 @Test
@@ -73,7 +74,7 @@ public class StandaloneModuleTests {
    @Test(expectedExceptions = IllegalArgumentException.class)
    public void testNonExistentModuleWillThrowException() throws Exception {
       AmbigousTestModule module = new AmbigousTestModule();
-      StandaloneModule.DESERIALIZATION_INSTANCE = null;
+      SerializableModule.clearStaticInstance();
 
       serializeThenDeserialize(module.getSingletonObject());
    }
@@ -132,8 +133,7 @@ public class StandaloneModuleTests {
 
    @BeforeMethod
    protected void setUp() {
-      StandaloneModule.DESERIALIZATION_INSTANCE = null;
-      StandaloneModule.DESERIALIZATION_INSTANCE_AMBIGOUS = false;
+      SerializableModule.clearStaticInstance();
    }
 }
 

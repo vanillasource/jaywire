@@ -16,13 +16,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package com.vanillasource.jaywire.standalone;
+package com.vanillasource.jaywire.serialization;
 
 import java.util.function.Supplier;
 import java.io.Serializable;
 import java.io.ObjectInputStream;
 import java.io.IOException;
-import static com.vanillasource.jaywire.standalone.SerializationUtil.*;
+import static com.vanillasource.jaywire.serialization.SerializationUtil.*;
 import com.vanillasource.jaywire.Scope;
 import com.vanillasource.jaywire.Factory;
 

@@ -18,7 +18,7 @@
 
 package com.vanillasource.jaywire.standalone;
 
-import static com.vanillasource.jaywire.standalone.SerializationUtil.*;
+import static com.vanillasource.jaywire.serialization.SerializationUtil.*;
 
 public class LastModuleDeserializerModule extends StandaloneModule {
    private static Object INSTANCE;

@@ -21,6 +21,8 @@ package com.vanillasource.jaywire.standalone;
 import com.vanillasource.jaywire.Scope;
 import com.vanillasource.jaywire.CloseableSupport;
 import com.vanillasource.jaywire.StandardScopesSupport;
+import com.vanillasource.jaywire.serialization.SerializableModule;
+import com.vanillasource.jaywire.serialization.SerializableScope;
 import java.util.Collection;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
