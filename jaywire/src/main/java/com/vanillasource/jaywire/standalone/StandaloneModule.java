@@ -20,7 +20,7 @@ package com.vanillasource.jaywire.standalone;
 
 import com.vanillasource.jaywire.Scope;
 import com.vanillasource.jaywire.CloseableSupport;
-import com.vanillasource.jaywire.StandardScopesSupport;
+import com.vanillasource.jaywire.ThreadLocalScopeSupport;
 import com.vanillasource.jaywire.serialization.SerializableModule;
 import com.vanillasource.jaywire.serialization.SerializableScope;
 import java.util.Collection;
@@ -31,18 +31,11 @@ import java.util.concurrent.ConcurrentLinkedDeque;
  * the standalone scopes. Extend this class on the top of your
  * module hierarchy to pull all standalone scope implementations.
  */
-public abstract class StandaloneModule extends SerializableModule implements StandardScopesSupport, CloseableSupport  {
-   private final Scope singletonScope;
+public abstract class StandaloneModule extends SerializableSingletonModule implements ThreadLocalScopeSupport, CloseableSupport  {
    private final Scope threadLocalScope;
 
    public StandaloneModule() {
-      singletonScope = new SerializableScope(new SingletonScope(), this::getSingletonScope);
       threadLocalScope = new SerializableScope(new ThreadLocalScope(), this::getThreadLocalScope);
-   }
-
-   @Override
-   public Scope getSingletonScope() {
-      return singletonScope;
    }
 
    @Override
