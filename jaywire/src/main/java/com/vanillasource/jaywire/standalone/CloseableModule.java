@@ -19,25 +19,34 @@
 package com.vanillasource.jaywire.standalone;
 
 import com.vanillasource.jaywire.Scope;
-import com.vanillasource.jaywire.ThreadLocalScopeSupport;
-import com.vanillasource.jaywire.serialization.SerializableModule;
-import com.vanillasource.jaywire.serialization.SerializableScope;
+import com.vanillasource.jaywire.CloseableSupport;
+import com.vanillasource.jaywire.SingletonScopeSupport;
+import java.util.Collection;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 /**
- * A module that combines all available functionality from
- * the standalone scopes. Extend this class on the top of your
- * module hierarchy to pull all standalone scope implementations.
+ * Implements being closeable, and closing registered closeables automatically
+ * as a mixin to any singleton supporting module.
  */
-public abstract class StandaloneModule extends SerializableSingletonModule implements ThreadLocalScopeSupport, CloseableModule {
-   private final Scope threadLocalScope;
-
-   public StandaloneModule() {
-      threadLocalScope = new SerializableScope(new ThreadLocalScope(), this::getThreadLocalScope);
+public interface CloseableModule extends CloseableSupport, SingletonScopeSupport {
+   default Collection<AutoCloseable> getCloseables() {
+      return singleton(() -> new ConcurrentLinkedDeque<AutoCloseable>());
    }
 
    @Override
-   public Scope getThreadLocalScope() {
-      return threadLocalScope;
+   default void closeWithModule(AutoCloseable closeable) {
+      getCloseables().add(closeable);
+   }
+
+   /**
+    * Tries to close all registered objects, but will abort at the first
+    * failure with the exception thrown from closeable.
+    */
+   @Override
+   default void close() throws Exception {
+      for (AutoCloseable closeable : getCloseables()) {
+         closeable.close();
+      }
    }
 }
 
