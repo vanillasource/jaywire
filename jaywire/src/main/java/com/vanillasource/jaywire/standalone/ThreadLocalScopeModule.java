@@ -19,25 +19,13 @@
 package com.vanillasource.jaywire.standalone;
 
 import com.vanillasource.jaywire.Scope;
-import com.vanillasource.jaywire.serialization.SerializableModule;
-import com.vanillasource.jaywire.serialization.SerializableScope;
-import com.vanillasource.jaywire.SingletonScopeSupport;
+import com.vanillasource.jaywire.ThreadLocalScopeSupport;
+import com.vanillasource.jaywire.SerializationSupport;
 
-/**
- * Implements the singleton scope, which is in fact an abstraction over
- * instance variables. With these two features (singletons and serialization)
- * all other features can be implemented as a mixin.
- */
-public abstract class SerializableSingletonModule extends SerializableModule implements SingletonScopeSupport {
-   private final Scope singletonScope;
-
-   public SerializableSingletonModule() {
-      singletonScope = new SerializableScope(new SingletonScope(), this::getSingletonScope);
-   }
-
+public interface ThreadLocalScopeModule extends SerializationSupport, ThreadLocalScopeSupport {
    @Override
-   public Scope getSingletonScope() {
-      return singletonScope;
+   default Scope getThreadLocalScope() {
+      return makeSerializableSingleton(() -> new ThreadLocalScope());
    }
 }
 

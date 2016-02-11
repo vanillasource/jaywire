@@ -18,13 +18,22 @@
 
 package com.vanillasource.jaywire.standalone;
 
-/**
- * A module that combines all available functionality from
- * the standalone scopes. Extend this class on the top of your
- * module hierarchy to pull all standalone scope implementations.
- */
-public abstract class StandaloneModule
-   extends SerializableSingletonScopeModule 
-   implements ThreadLocalScopeModule, CloseableModule, SerializationModule {
+import com.vanillasource.jaywire.SerializationSupport;
+import com.vanillasource.jaywire.Scope;
+import com.vanillasource.jaywire.Factory;
+import com.vanillasource.jaywire.SingletonScopeSupport;
+import com.vanillasource.jaywire.serialization.SerializableScope;
+import java.util.function.Supplier;
+
+public interface SerializationModule extends SerializationSupport, SingletonScopeSupport {
+   @Override
+   default Scope makeSerializable(Supplier<Scope> scopeSupplier) {
+      return new SerializableScope(scopeSupplier.get(), () -> scopeSupplier.get());
+   }
+
+   @Override
+   default Scope makeSerializableSingleton(Factory<Scope> scopeFactory) {
+      return makeSerializable(singletonSupplier(scopeFactory));
+   }
 }
 

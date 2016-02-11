@@ -21,12 +21,7 @@ package com.vanillasource.jaywire.serialization;
 import java.io.IOException;
 
 public class SerializationUtil {
-   private static ThreadLocal<Boolean> DESERIALIZING = new ThreadLocal<Boolean>() {
-      @Override
-      protected Boolean initialValue() {
-         return false;
-      }
-   };
+   private static ThreadLocal<Boolean> DESERIALIZING = ThreadLocal.withInitial(() -> false);
 
    private SerializationUtil() {
    }

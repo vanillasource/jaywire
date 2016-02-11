@@ -16,15 +16,27 @@
   * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
   */
 
-package com.vanillasource.jaywire.standalone;
+package com.vanillasource.jaywire;
+
+import java.util.function.Supplier;
 
 /**
- * A module that combines all available functionality from
- * the standalone scopes. Extend this class on the top of your
- * module hierarchy to pull all standalone scope implementations.
+ * Defines helper methods to levarage serialization related functions
+ * in a module.
  */
-public abstract class StandaloneModule
-   extends SerializableSingletonScopeModule 
-   implements ThreadLocalScopeModule, CloseableModule, SerializationModule {
+public interface SerializationSupport {
+   /**
+    * Make a regular scope a singleton, and wrap so all produced
+    * suppliers of this scope would be serializable themselves. Neither
+    * the scope object, nor the issued objects need to be serializable.
+    */
+   Scope makeSerializableSingleton(Factory<Scope> scopeFactory);
+
+   /**
+    * Make a scope serializable by providing a serializable supplier that
+    * can produce said scope. This <code>Supplier</code> <strong>must</strong>
+    * be serializable, preferably generated from another scope.
+    */
+   Scope makeSerializable(Supplier<Scope> scopeSupplier);
 }
 
