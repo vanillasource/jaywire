@@ -57,28 +57,6 @@ public class StandaloneModuleTests {
       assertEquals(singletonSupplier2.get().getParameter(), "ModuleTwo");
    }
 
-   public void testNonAmbigousModuleCanDeserializeSupplier() throws Exception {
-      AmbigousTestModule module = new AmbigousTestModule();
-
-      serializeThenDeserialize(module.getSingletonObject());
-   }
-
-   @Test(expectedExceptions = IllegalArgumentException.class)
-   public void testAmbigousModuleThrowsException() throws Exception {
-      AmbigousTestModule module1 = new AmbigousTestModule();
-      AmbigousTestModule module2 = new AmbigousTestModule();
-
-      serializeThenDeserialize(module1.getSingletonObject());
-   }
-
-   @Test(expectedExceptions = IllegalArgumentException.class)
-   public void testNonExistentModuleWillThrowException() throws Exception {
-      AmbigousTestModule module = new AmbigousTestModule();
-      SerializableModule.clearStaticInstance();
-
-      serializeThenDeserialize(module.getSingletonObject());
-   }
-
    public void testRegisteredCloseableGetsClosed() throws Exception {
       AutoCloseable closeable = mock(AutoCloseable.class);
 
@@ -129,11 +107,6 @@ public class StandaloneModuleTests {
          module.closeWithModule(closeable);
       }
 
-   }
-
-   @BeforeMethod
-   protected void setUp() {
-      SerializableModule.clearStaticInstance();
    }
 }
 

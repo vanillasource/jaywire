@@ -25,12 +25,12 @@ public class SerializationUtils {
    }
 
    @SuppressWarnings("unchecked")
-   public static <T> T serializeThenDeserialize(T object) throws Exception {
+   public static <T> T serializeThenDeserialize(T object) throws IOException, ClassNotFoundException {
       return deserialize((Class<T>) object.getClass(), serialize(object));
    }
 
    @SuppressWarnings("unchecked")
-   public static byte[] serialize(Object object) throws Exception {
+   public static byte[] serialize(Object object) throws IOException, ClassNotFoundException {
       ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
       ObjectOutputStream objectOut = new ObjectOutputStream(byteOut);
       objectOut.writeObject(object);
@@ -39,7 +39,7 @@ public class SerializationUtils {
    }
 
    @SuppressWarnings("unchecked")
-   public static <T> T deserialize(Class<T> classOfT, byte[] bytes) throws Exception {
+   public static <T> T deserialize(Class<T> classOfT, byte[] bytes) throws IOException, ClassNotFoundException {
       ByteArrayInputStream byteIn = new ByteArrayInputStream(bytes);
       ObjectInputStream objectIn = new ObjectInputStream(byteIn);
       return (T) objectIn.readObject();

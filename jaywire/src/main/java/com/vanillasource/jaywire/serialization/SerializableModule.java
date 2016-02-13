@@ -83,7 +83,7 @@ public abstract class SerializableModule implements Externalizable {
       return getStaticDeserializationModule();
    }
 
-   public static void clearStaticInstance() {
+   static void clearStaticInstance() {
       DESERIALIZATION_INSTANCE = null;
       DESERIALIZATION_INSTANCE_AMBIGOUS = false;
    }
