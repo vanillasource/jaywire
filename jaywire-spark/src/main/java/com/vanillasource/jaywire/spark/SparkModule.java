@@ -19,10 +19,8 @@
 package com.vanillasource.jaywire.spark;
 
 import com.vanillasource.jaywire.standalone.StandaloneModule;
-import com.vanillasource.jaywire.web.RequestScopeSupport;
-import com.vanillasource.jaywire.web.ServletRequestScope;
-import com.vanillasource.jaywire.web.SessionScopeSupport;
-import com.vanillasource.jaywire.web.HttpSessionScope;
+import com.vanillasource.jaywire.web.ServletRequestScopeModule;
+import com.vanillasource.jaywire.web.HttpSessionScopeModule;
 import com.vanillasource.jaywire.Scope;
 import spark.Spark;
 
@@ -32,28 +30,16 @@ import spark.Spark;
  * session scopes.
  */
 public abstract class SparkModule extends StandaloneModule
-      implements RequestScopeSupport, SessionScopeSupport {
-   private final ServletRequestScope requestScope = new ServletRequestScope();
-   private final HttpSessionScope sessionScope = new HttpSessionScope();
-
-   @Override
-   public Scope getRequestScope() {
-      return requestScope;
-   }
-
-   @Override
-   public Scope getSessionScope() {
-      return sessionScope;
-   }
+      implements ServletRequestScopeModule, HttpSessionScopeModule {
 
    public void addRoutes() {
       Spark.before((request, response) -> {
-         requestScope.setServletRequest(request.raw());
-         sessionScope.setHttpSession(request.session(true).raw());
+         getServletRequestScope().setServletRequest(request.raw());
+         getHttpSessionScope().setHttpSession(request.session(true).raw());
       });
       Spark.after((request, response) -> {
-         requestScope.clearServletRequest();
-         sessionScope.clearHttpSession();
+         getServletRequestScope().clearServletRequest();
+         getHttpSessionScope().clearHttpSession();
       });
    }
 }

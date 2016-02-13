@@ -16,27 +16,10 @@
   * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
   */
 
-package com.vanillasource.jaywire;
+package com.vanillasource.jaywire.serialization;
 
 import java.util.function.Supplier;
+import java.io.Serializable;
 
-/**
- * Defines helper methods to levarage serialization related functions
- * in a module.
- */
-public interface SerializationSupport {
-   /**
-    * Make a regular scope a singleton, and wrap so all produced
-    * suppliers of this scope would be serializable themselves. Neither
-    * the scope object, nor the issued objects need to be serializable.
-    */
-   Scope makeSerializableSingleton(Factory<Scope> scopeFactory);
-
-   /**
-    * Make a scope serializable by providing a serializable supplier that
-    * can produce said scope. This <code>Supplier</code> <strong>must</strong>
-    * be serializable, preferably generated from another scope.
-    */
-   Scope makeSerializable(Supplier<Scope> scopeSupplier);
+public interface SerializableSupplier<T> extends Supplier<T>, Serializable {
 }
-

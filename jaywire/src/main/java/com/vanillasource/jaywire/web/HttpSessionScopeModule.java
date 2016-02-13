@@ -16,24 +16,24 @@
   * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
   */
 
-package com.vanillasource.jaywire.standalone;
+package com.vanillasource.jaywire.web;
 
-import com.vanillasource.jaywire.SerializationSupport;
-import com.vanillasource.jaywire.Scope;
-import com.vanillasource.jaywire.Factory;
+import com.vanillasource.jaywire.serialization.SerializationSupport;
 import com.vanillasource.jaywire.SingletonScopeSupport;
-import com.vanillasource.jaywire.serialization.SerializableScope;
-import java.util.function.Supplier;
+import com.vanillasource.jaywire.Scope;
 
-public interface SerializationModule extends SerializationSupport, SingletonScopeSupport {
-   @Override
-   default Scope makeSerializable(Supplier<Scope> scopeSupplier) {
-      return new SerializableScope(scopeSupplier.get(), () -> scopeSupplier.get());
+public interface HttpSessionScopeModule extends SessionScopeSupport, SerializationSupport, SingletonScopeSupport {
+   /**
+    * Provides a method to directly get the <code>HttpSessionScope</code>,
+    * to be able to set and clear its session.
+    */
+   default HttpSessionScope getHttpSessionScope() {
+      return singleton( () -> new HttpSessionScope() );
    }
 
    @Override
-   default Scope makeSerializableSingleton(Factory<Scope> scopeFactory) {
-      return makeSerializable(singletonSupplier(scopeFactory));
+   default Scope getSessionScope() {
+      return makeSerializable( () -> getHttpSessionScope() );
    }
 }
 

@@ -20,10 +20,8 @@ package com.vanillasource.jaywire.servlet;
 
 import com.vanillasource.jaywire.Scope;
 import com.vanillasource.jaywire.standalone.StandaloneModule;
-import com.vanillasource.jaywire.web.ServletRequestScope;
-import com.vanillasource.jaywire.web.HttpSessionScope;
-import com.vanillasource.jaywire.web.RequestScopeSupport;
-import com.vanillasource.jaywire.web.SessionScopeSupport;
+import com.vanillasource.jaywire.web.ServletRequestScopeModule;
+import com.vanillasource.jaywire.web.HttpSessionScopeModule;
 import javax.servlet.ServletContextListener;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContext;
@@ -53,26 +51,13 @@ import java.io.IOException;
  */
 public abstract class ServletModule
       extends StandaloneModule
-      implements RequestScopeSupport, SessionScopeSupport, ServletContextListener {
-
-   private final HttpSessionScope sessionScope = new HttpSessionScope();
-   private final ServletRequestScope requestScope = new ServletRequestScope();
+      implements ServletRequestScopeModule, HttpSessionScopeModule, ServletContextListener {
 
    @Override
    public void contextInitialized(ServletContextEvent event) {
       ServletContext context = event.getServletContext();
       registerInfrastructure(context);
       registerComponents(context);
-   }
-
-   @Override
-   public Scope getSessionScope() {
-      return sessionScope;
-   }
-
-   @Override
-   public Scope getRequestScope() {
-      return requestScope;
    }
 
    private void registerInfrastructure(ServletContext context) {
@@ -88,16 +73,16 @@ public abstract class ServletModule
          @Override
          public void doFilter(ServletRequest request, 
                ServletResponse response, FilterChain chain) throws ServletException, IOException {
-            requestScope.setServletRequest(request);
+            getServletRequestScope().setServletRequest(request);
             if (request instanceof HttpServletRequest) {
                HttpServletRequest httpRequest = (HttpServletRequest) request;
-               sessionScope.setHttpSession(httpRequest.getSession(true));
+               getHttpSessionScope().setHttpSession(httpRequest.getSession(true));
             }
             try {
                chain.doFilter(request, response);
             } finally {
-               requestScope.clearServletRequest();
-               sessionScope.clearHttpSession();
+               getServletRequestScope().clearServletRequest();
+               getHttpSessionScope().clearHttpSession();
             }
          }
       }).addMappingForUrlPatterns(null, false, "/*");

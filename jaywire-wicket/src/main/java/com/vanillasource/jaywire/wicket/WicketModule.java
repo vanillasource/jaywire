@@ -19,10 +19,8 @@
 package com.vanillasource.jaywire.wicket;
 
 import com.vanillasource.jaywire.standalone.StandaloneModule;
-import com.vanillasource.jaywire.web.RequestScopeSupport;
-import com.vanillasource.jaywire.web.ServletRequestScope;
-import com.vanillasource.jaywire.web.HttpSessionScope;
-import com.vanillasource.jaywire.web.SessionScopeSupport;
+import com.vanillasource.jaywire.web.ServletRequestScopeModule;
+import com.vanillasource.jaywire.web.HttpSessionScopeModule;
 import com.vanillasource.jaywire.Scope;
 import org.apache.wicket.Application;
 import org.apache.wicket.Session;
@@ -43,21 +41,9 @@ import java.util.Map;
 import java.util.HashMap;
 
 public abstract class WicketModule extends StandaloneModule
-      implements RequestScopeSupport, SessionScopeSupport {
+      implements ServletRequestScopeModule, HttpSessionScopeModule {
 
-   private final HttpSessionScope sessionScope = new HttpSessionScope();
-   private final ServletRequestScope requestScope = new ServletRequestScope();
    private final Map<Class<?>, Function<PageParameters, ?>> pageFactories = new HashMap<>();
-
-   @Override
-   public Scope getRequestScope() {
-      return requestScope;
-   }
-
-   @Override
-   public Scope getSessionScope() {
-      return sessionScope;
-   }
 
    /**
     * Call in the <code>init()</code> method of the
@@ -75,7 +61,7 @@ public abstract class WicketModule extends StandaloneModule
          public void onBeginRequest(RequestCycle requestCycle) {
             if (requestCycle.getRequest() != null && requestCycle.getRequest() instanceof ServletWebRequest) {
                ServletRequest request = ((ServletWebRequest) requestCycle.getRequest()).getContainerRequest();
-               requestScope.setServletRequest(request);
+               getServletRequestScope().setServletRequest(request);
                // Force creation of session
                if (request instanceof HttpServletRequest) {
                   application.getSessionStore().getSessionId(requestCycle.getRequest(), true);
@@ -83,15 +69,15 @@ public abstract class WicketModule extends StandaloneModule
                   if (session == null) {
                      throw new WicketRuntimeException("Could not create session, which is necessary for JayWire session scope.");
                   }
-                  sessionScope.setHttpSession(((HttpServletRequest) request).getSession());
+                  getHttpSessionScope().setHttpSession(((HttpServletRequest) request).getSession());
                }
             }
          }
 
          @Override
          public void onEndRequest(RequestCycle requestCycle) {
-            sessionScope.clearHttpSession();
-            requestScope.clearServletRequest();
+            getHttpSessionScope().clearHttpSession();
+            getServletRequestScope().clearServletRequest();
          }
       });
       application.getApplicationListeners().add(new IApplicationListener() {
