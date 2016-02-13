@@ -18,34 +18,14 @@
 
 package com.vanillasource.jaywire.web;
 
-import com.vanillasource.jaywire.Scope;
-import com.vanillasource.jaywire.Factory;
 import javax.servlet.http.HttpSession;
 
-public class HttpSessionScope implements Scope {
-   private ThreadLocal<HttpSession> sessionThreadLocal = new ThreadLocal<>();
-
-   @Override
-   @SuppressWarnings("unchecked")
-   public <T> T get(Factory<T> factory) {
-      HttpSession session = sessionThreadLocal.get();
-      if (session == null) {
-         throw new IllegalStateException("there was no session trying to get session scoped object");
-      }
-      T object = (T) session.getAttribute(factory.getKind());
-      if (object == null) {
-         object = factory.get();
-         session.setAttribute(factory.getKind(), object);
-      }
-      return object;
-   }
-
-   public void setHttpSession(HttpSession session) {
-      sessionThreadLocal.set(session);
-   }
-
-   public void clearHttpSession() {
-      sessionThreadLocal.set(null);
+public class HttpSessionScope extends ThreadLocalStorageScope<HttpSession> {
+   public HttpSessionScope() {
+      super(
+         (session, key) -> session.getAttribute(key),
+         (session, key, object) -> session.setAttribute(key, object)
+      );
    }
 }
 

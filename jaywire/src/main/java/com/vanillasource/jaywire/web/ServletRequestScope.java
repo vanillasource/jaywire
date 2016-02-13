@@ -18,34 +18,14 @@
 
 package com.vanillasource.jaywire.web;
 
-import com.vanillasource.jaywire.Scope;
-import com.vanillasource.jaywire.Factory;
 import javax.servlet.ServletRequest;
 
-public class ServletRequestScope implements Scope {
-   private ThreadLocal<ServletRequest> requestThreadLocal = new ThreadLocal<>();
-
-   @Override
-   @SuppressWarnings("unchecked")
-   public <T> T get(Factory<T> factory) {
-      ServletRequest request = requestThreadLocal.get();
-      if (request == null) {
-         throw new IllegalStateException("there was no request trying to get request scoped object");
-      }
-      T object = (T) request.getAttribute(factory.getKind());
-      if (object == null) {
-         object = factory.get();
-         request.setAttribute(factory.getKind(), object);
-      }
-      return object;
-   }
-
-   public void setServletRequest(ServletRequest request) {
-      requestThreadLocal.set(request);
-   }
-
-   public void clearServletRequest() {
-      requestThreadLocal.set(null);
+public class ServletRequestScope extends ThreadLocalStorageScope<ServletRequest> {
+   public ServletRequestScope() {
+      super(
+         (request, key) -> request.getAttribute(key),
+         (request, key, object) -> request.setAttribute(key, object)
+      );
    }
 }
 
