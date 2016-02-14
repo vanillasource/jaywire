@@ -16,9 +16,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package com.vanillasource.jaywire;
+package com.vanillasource.jaywire.serialization;
 
-import com.vanillasource.function.Supplier4;
+import com.vanillasource.function.Supplier1;
 import java.io.Serializable;
 
 /**
@@ -26,6 +26,6 @@ import java.io.Serializable;
  * <i>kind</i>. 
  */
 @FunctionalInterface
-public interface Factory4<P1, P2, P3, P4, T> extends Supplier4<P1, P2, P3, P4, T>, Kinded, Serializable {
+public interface SerializableSupplier1<P1, T> extends Supplier1<P1, T>, Serializable {
 }
 
