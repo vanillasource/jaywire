@@ -33,7 +33,7 @@ public interface HttpSessionScopeModule extends SessionScopeSupport, Serializati
 
    @Override
    default Scope getSessionScope() {
-      return makeSerializable( () -> getHttpSessionScope() );
+      return makeScopeSerializable( () -> getHttpSessionScope() );
    }
 }
 

@@ -25,7 +25,7 @@ import com.vanillasource.jaywire.serialization.SerializationSupport;
 public interface ThreadLocalScopeModule extends SerializationSupport, ThreadLocalScopeSupport {
    @Override
    default Scope getThreadLocalScope() {
-      return makeSerializableSingleton(() -> new ThreadLocalScope());
+      return makeScopeSerializableSingleton(() -> new ThreadLocalScope());
    }
 }
 

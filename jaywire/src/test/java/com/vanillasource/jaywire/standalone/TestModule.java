@@ -19,6 +19,7 @@
 package com.vanillasource.jaywire.standalone;
 
 import java.util.function.Supplier;
+import com.vanillasource.function.Supplier2;
 
 public class TestModule extends LastModuleDeserializerModule {
    public Supplier<Object> getSingletonObject() {
@@ -27,6 +28,14 @@ public class TestModule extends LastModuleDeserializerModule {
 
    public Supplier<Object> getThreadLocalObject() {
       return threadLocal( () -> new Object() );
+   }
+
+   public String getSingletonConfiguration() {
+      return singleton( () -> "config" );
+   }
+
+   public Supplier2<String, String, String> getConcatenationSupplier() {
+      return makeSerializable((a, b) -> a+" "+b+" ("+getSingletonConfiguration()+")");
    }
 }
 

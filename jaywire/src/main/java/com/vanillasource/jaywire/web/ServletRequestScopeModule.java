@@ -33,7 +33,7 @@ public interface ServletRequestScopeModule extends RequestScopeSupport, Singleto
 
    @Override
    default Scope getRequestScope() {
-      return makeSerializable( () -> getServletRequestScope() );
+      return makeScopeSerializable( () -> getServletRequestScope() );
    }
 }
 

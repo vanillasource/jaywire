@@ -41,6 +41,12 @@ public class StandaloneModuleTests {
       serializeThenDeserialize(module.getThreadLocalObject());
    }
 
+   public void testSupplierWithArityIsSerializable() throws Exception {
+      TestModule module = new TestModule();
+
+      serializeThenDeserialize(module.getConcatenationSupplier());
+   }
+
    public void testAdditionalAttributesAreNotSerialized() throws Exception {
       AdditionalAttributeTestModule module = new AdditionalAttributeTestModule();
 
