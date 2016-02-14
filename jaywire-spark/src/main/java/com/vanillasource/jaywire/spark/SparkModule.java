@@ -34,12 +34,12 @@ public abstract class SparkModule extends StandaloneModule
 
    public void addRoutes() {
       Spark.before((request, response) -> {
-         getServletRequestScope().setServletRequest(request.raw());
-         getHttpSessionScope().setHttpSession(request.session(true).raw());
+         getServletRequestScope().setStorage(request.raw());
+         getHttpSessionScope().setStorage(request.session(true).raw());
       });
       Spark.after((request, response) -> {
-         getServletRequestScope().clearServletRequest();
-         getHttpSessionScope().clearHttpSession();
+         getServletRequestScope().clearStorage();
+            getHttpSessionScope().clearStorage();
       });
    }
 }

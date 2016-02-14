@@ -61,7 +61,7 @@ public abstract class WicketModule extends StandaloneModule
          public void onBeginRequest(RequestCycle requestCycle) {
             if (requestCycle.getRequest() != null && requestCycle.getRequest() instanceof ServletWebRequest) {
                ServletRequest request = ((ServletWebRequest) requestCycle.getRequest()).getContainerRequest();
-               getServletRequestScope().setServletRequest(request);
+               getServletRequestScope().setStorage(request);
                // Force creation of session
                if (request instanceof HttpServletRequest) {
                   application.getSessionStore().getSessionId(requestCycle.getRequest(), true);
@@ -69,15 +69,15 @@ public abstract class WicketModule extends StandaloneModule
                   if (session == null) {
                      throw new WicketRuntimeException("Could not create session, which is necessary for JayWire session scope.");
                   }
-                  getHttpSessionScope().setHttpSession(((HttpServletRequest) request).getSession());
+                  getHttpSessionScope().setStorage(((HttpServletRequest) request).getSession());
                }
             }
          }
 
          @Override
          public void onEndRequest(RequestCycle requestCycle) {
-            getHttpSessionScope().clearHttpSession();
-            getServletRequestScope().clearServletRequest();
+            getHttpSessionScope().clearStorage();
+            getServletRequestScope().clearStorage();
          }
       });
       application.getApplicationListeners().add(new IApplicationListener() {

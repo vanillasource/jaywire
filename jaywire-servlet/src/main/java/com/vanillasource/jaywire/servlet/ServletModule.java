@@ -73,16 +73,16 @@ public abstract class ServletModule
          @Override
          public void doFilter(ServletRequest request, 
                ServletResponse response, FilterChain chain) throws ServletException, IOException {
-            getServletRequestScope().setServletRequest(request);
+            getServletRequestScope().setStorage(request);
             if (request instanceof HttpServletRequest) {
                HttpServletRequest httpRequest = (HttpServletRequest) request;
-               getHttpSessionScope().setHttpSession(httpRequest.getSession(true));
+               getHttpSessionScope().setStorage(httpRequest.getSession(true));
             }
             try {
                chain.doFilter(request, response);
             } finally {
-               getServletRequestScope().clearServletRequest();
-               getHttpSessionScope().clearHttpSession();
+               getServletRequestScope().clearStorage();
+               getHttpSessionScope().clearStorage();
             }
          }
       }).addMappingForUrlPatterns(null, false, "/*");
