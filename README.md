@@ -4,6 +4,8 @@
 JayWire Dependency Injection
 ============================
 
+[![Join the chat at https://gitter.im/vanillasource/jaywire](https://badges.gitter.im/vanillasource/jaywire.svg)](https://gitter.im/vanillasource/jaywire?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 A very small and lightweight dependency injection framework for Java 8 without magic. Main features are:
 
 * 100% pure Java code (no XML, no config files)
