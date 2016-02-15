@@ -31,7 +31,7 @@ Add this dependency to your Maven build:
 <dependency>
    <groupId>com.vanillasource.jaywire</groupId>
    <artifactId>jaywire</artifactId>
-   <version>1.0.3</version>
+   <version>1.1.0</version>
 </dependency>
 ```
 
