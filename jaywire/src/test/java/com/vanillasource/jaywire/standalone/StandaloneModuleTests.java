@@ -104,6 +104,13 @@ public class StandaloneModuleTests {
       verify(closeable2, never()).close();
    }
 
+   public void testCloseWithModulSyntaxIsChainable() throws Exception {
+      TestModule module = new TestModule();
+      AutoCloseable closeable = mock(AutoCloseable.class);
+
+      module.singleton(() -> module.closeWithModule(closeable));
+   }
+
    @Test(expectedExceptions = Exception.class)
    public void testLastCloseExceptionGetsRethrown() throws Exception {
       AutoCloseable closeable = mock(AutoCloseable.class);

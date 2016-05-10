@@ -34,8 +34,9 @@ public interface CloseableModule extends CloseableSupport, SingletonScopeSupport
    }
 
    @Override
-   default void closeWithModule(AutoCloseable closeable) {
+   default <T extends AutoCloseable> T closeWithModule(T closeable) {
       getCloseables().add(closeable);
+      return closeable;
    }
 
    /**

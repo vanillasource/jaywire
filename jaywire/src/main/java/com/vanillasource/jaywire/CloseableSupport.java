@@ -27,6 +27,6 @@ public interface CloseableSupport extends AutoCloseable {
     * Applied directly to closeable objects will register
     * the object to be closed together with the module.
     */
-   void closeWithModule(AutoCloseable closeable);
+   <T extends AutoCloseable> T closeWithModule(T closeable);
 }
 
