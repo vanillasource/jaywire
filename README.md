@@ -79,6 +79,8 @@ public class MyApp {
 
 ### Documentation
 
+The JayWire [API Documentation](http://vanillasource.github.io/jaywire/apidocs/).
+
 Please visit the [JayWire Wiki](https://github.com/vanillasource/jaywire/wiki) for more information.
 
 ### Related external projects
