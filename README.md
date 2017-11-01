@@ -8,7 +8,7 @@ JayWire Dependency Injection
 A very small and lightweight dependency injection framework for Java 8 without magic. Main features are:
 
 * 100% pure Java code (no XML, no config files)
-* Explicit, compile-time wireing
+* Explicit, compile-time wiring
 * Typesafe
 * Modular and extendable
 * Small and easy
@@ -38,9 +38,9 @@ Add this dependency to your Maven build:
 This will include the basic interfaces and scopes for standalone usage. 
 For integration with Web-frameworks see Wiki.
 
-### Wireing everything together
+### Wiring everything together
 
-For a simple application a single "Module" object wireing everything together is written this way:
+For a simple application a single "Module" object wiring everything together is written this way:
 
 ```java
 import com.vanillasource.jaywire.standalone.StandaloneModule;
