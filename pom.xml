@@ -15,6 +15,7 @@
       <module>jaywire-servlet</module>
       <module>jaywire-wicket</module>
       <module>jaywire-ee</module>
+      <module>jaywire-android</module>
    </modules>
 
    <properties>
