@@ -19,7 +19,7 @@
 package com.vanillasource.jaywire.standalone;
 
 import java.util.function.Supplier;
-import com.vanillasource.function.Supplier2;
+import com.vanillasource.jaywire.serialization.Supplier2;
 
 public class TestModule extends LastModuleDeserializerModule {
    public Supplier<Object> getSingletonObject() {

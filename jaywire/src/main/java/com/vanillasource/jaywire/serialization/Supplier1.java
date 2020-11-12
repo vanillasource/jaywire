@@ -18,13 +18,23 @@
 
 package com.vanillasource.jaywire.serialization;
 
-import java.io.Serializable;
+import java.util.function.Supplier;
 
 /**
- * Responsible for creating an object instance of a certain
- * <i>kind</i>. 
+ * A supplier of objects with 1 parameter.
  */
 @FunctionalInterface
-public interface SerializableSupplier2<P1, P2, T> extends Supplier2<P1, P2, T>, Serializable {
+public interface Supplier1<P1, T> {
+   /**
+    * Gets an object with the given parameter.
+    */
+   T get(P1 p1);
+
+   /**
+    * Sets the parameter and returns a supplier with no parameters.
+    */
+   default Supplier<T> param(P1 p1) {
+      return () -> get(p1);
+   }
 }
 

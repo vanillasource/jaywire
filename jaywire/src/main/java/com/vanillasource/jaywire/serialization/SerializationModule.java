@@ -22,15 +22,6 @@ import com.vanillasource.jaywire.Scope;
 import com.vanillasource.jaywire.Factory;
 import com.vanillasource.jaywire.SingletonScopeSupport;
 import java.util.function.Supplier;
-import com.vanillasource.function.Supplier1;
-import com.vanillasource.function.Supplier2;
-import com.vanillasource.function.Supplier3;
-import com.vanillasource.function.Supplier4;
-import com.vanillasource.function.Supplier5;
-import com.vanillasource.function.Supplier6;
-import com.vanillasource.function.Supplier7;
-import com.vanillasource.function.Supplier8;
-import com.vanillasource.function.Supplier9;
 
 public interface SerializationModule extends SerializationSupport, SingletonScopeSupport {
    @Override

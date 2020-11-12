@@ -18,7 +18,6 @@
 
 package com.vanillasource.jaywire.serialization;
 
-import com.vanillasource.function.Supplier5;
 import java.io.Serializable;
 
 /**
