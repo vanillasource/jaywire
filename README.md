@@ -85,4 +85,4 @@ Please visit the [JayWire Wiki](https://github.com/vanillasource/jaywire/wiki) f
 
 ### Related external projects
 
- * [Pouch](https://bitbucket.org/cowwoc/pouch/) is an interesting rethinking of the Service Locator pattern.
+ * [Pouch](https://github.com/cowwoc/pouch) is an interesting rethinking of the Service Locator pattern.
